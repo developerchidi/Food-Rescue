@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Map as MapIcon, List, Filter, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { Search, Map as MapIcon, List, Filter, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import FoodCard from "../FoodCard";
 import dynamic from "next/dynamic";
 
@@ -25,6 +25,8 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
 
   const filteredPosts = initialData.filter((post) => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -32,6 +34,21 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
     const matchesCategory = activeCategory === "all" || post.type === activeCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // Reset to page 1 when filters change
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (val: string) => {
+    setActiveCategory(val);
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedPosts = filteredPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="container mx-auto px-6">
@@ -45,7 +62,7 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
             type="text"
             placeholder="Tìm món ăn, nhà hàng hoặc khu vực..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full h-16 pl-14 pr-6 bg-white border border-black/5 rounded-[2rem] focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium text-lg shadow-sm"
           />
         </div>
@@ -93,17 +110,17 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
               <FilterChip
                 label="Tất cả bữa ăn"
                 active={activeCategory === "all"}
-                onClick={() => setActiveCategory("all")}
+                onClick={() => handleCategoryChange("all")}
               />
               <FilterChip
                 label="Mystery Boxes"
                 active={activeCategory === "MYSTERY_BOX"}
-                onClick={() => setActiveCategory("MYSTERY_BOX")}
+                onClick={() => handleCategoryChange("MYSTERY_BOX")}
               />
               <FilterChip
                 label="Món đơn lẻ"
                 active={activeCategory === "INDIVIDUAL"}
-                onClick={() => setActiveCategory("INDIVIDUAL")}
+                onClick={() => handleCategoryChange("INDIVIDUAL")}
               />
             </div>
           </div>
@@ -143,7 +160,7 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredPosts.map((post) => (
+                  {paginatedPosts.map((post) => (
                     <FoodCard
                       key={post.id}
                       id={post.id}
@@ -158,6 +175,42 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
                       type={post.type}
                     />
                   ))}
+                </div>
+              )}
+
+              {/* Pagination UI */}
+              {totalPages > 1 && (
+                <div className="mt-16 flex items-center justify-center gap-4">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="w-12 h-12 rounded-2xl border border-black/5 bg-white flex items-center justify-center text-foreground hover:bg-mint-primary hover:border-mint-primary transition-all disabled:opacity-20 disabled:hover:bg-white"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-12 h-12 rounded-2xl font-black transition-all ${currentPage === page
+                          ? "bg-mint-darker text-white shadow-lg shadow-mint-darker/20"
+                          : "bg-white border border-black/5 text-foreground/40 hover:border-mint-primary"
+                          }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="w-12 h-12 rounded-2xl border border-black/5 bg-white flex items-center justify-center text-foreground hover:bg-mint-primary hover:border-mint-primary transition-all disabled:opacity-20 disabled:hover:bg-white"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
                 </div>
               )}
             </>

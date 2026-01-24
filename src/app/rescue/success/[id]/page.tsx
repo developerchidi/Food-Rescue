@@ -7,6 +7,9 @@ import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+
 interface SuccessPageProps {
   params: Promise<{
     id: string;
@@ -14,7 +17,12 @@ interface SuccessPageProps {
 }
 
 export default async function RescueSuccessPage({ params }: SuccessPageProps) {
+  const session = await auth();
   const { id } = await params;
+
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
 
   const donation = await prisma.donation.findUnique({
     where: { id },
@@ -28,6 +36,11 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
   });
 
   if (!donation) {
+    notFound();
+  }
+
+  // Security Check: Only the receiver can view their success page
+  if (donation.receiverId !== session.user.id) {
     notFound();
   }
 

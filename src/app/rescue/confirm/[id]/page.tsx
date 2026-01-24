@@ -7,6 +7,9 @@ import RescueConfirmForm from "./RescueConfirmForm";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+
 interface ConfirmPageProps {
   params: Promise<{
     id: string;
@@ -14,7 +17,12 @@ interface ConfirmPageProps {
 }
 
 export default async function RescueConfirmPage({ params }: ConfirmPageProps) {
+  const session = await auth();
   const { id } = await params;
+
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
 
   const post = await prisma.foodPost.findUnique({
     where: { id },

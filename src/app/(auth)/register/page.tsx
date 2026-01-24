@@ -44,71 +44,75 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout>
-      <div className="mb-10">
-        <h1 className="text-4xl font-black text-[#2d3436] mb-3">Tạo tài khoản mới</h1>
-        <p className="text-foreground/50 font-medium">Bắt đầu hành trình sống xanh của bạn ngay hôm nay.</p>
+      <div className="mb-10 text-center">
+        <h1 className="text-4xl font-black text-[#2d3436] mb-3 tracking-tighter italic">Tham gia <span className="text-mint-primary">Cộng đồng</span></h1>
+        <p className="text-foreground/50 font-medium italic">"Bắt đầu hành trình sống xanh và nhân ái của bạn ngay hôm nay."</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-8">
         {error && (
           <div className="p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-bold animate-shake">
             {error}
           </div>
         )}
-        <div>
-          <label className="block text-sm font-black text-[#2d3436] mb-2 px-1 text-left">Họ và Tên</label>
-          <div className="relative group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/20 group-focus-within:text-mint-darker transition-colors">
-              <User size={20} />
-            </div>
-            <input
-              name="name"
-              type="text"
-              placeholder="Nguyễn Văn A"
-              required
-              className="w-full h-14 pl-12 pr-4 bg-white border border-black/5 rounded-2xl focus:outline-none focus:border-mint-primary focus:ring-4 focus:ring-mint-primary/10 transition-all font-medium"
-            />
-          </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-black text-[#2d3436] mb-2 px-1 text-left">Email</label>
-          <div className="relative group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/20 group-focus-within:text-mint-darker transition-colors">
-              <Mail size={20} />
-            </div>
-            <input
-              name="email"
-              type="email"
-              placeholder="ten@ví-dụ.com"
-              required
-              className="w-full h-14 pl-12 pr-4 bg-white border border-black/5 rounded-2xl focus:outline-none focus:border-mint-primary focus:ring-4 focus:ring-mint-primary/10 transition-all font-medium"
-            />
-          </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-black text-[#2d3436] mb-2 px-1 text-left">Mật khẩu</label>
-          <div className="relative group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/20 group-focus-within:text-mint-darker transition-colors">
-              <Lock size={20} />
+        <div className="space-y-5">
+          <div>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Họ và Tên</label>
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/20 group-focus-within:text-mint-darker transition-colors">
+                <User size={20} />
+              </div>
+              <input
+                name="name"
+                type="text"
+                placeholder="Nguyễn Văn A"
+                required
+                className="w-full h-14 pl-12 pr-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:border-mint-primary focus:ring-4 focus:ring-mint-primary/10 transition-all font-medium text-sm"
+              />
             </div>
-            <input
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              className="w-full h-14 pl-12 pr-4 bg-white border border-black/5 rounded-2xl focus:outline-none focus:border-mint-primary focus:ring-4 focus:ring-mint-primary/10 transition-all font-medium"
-            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Email</label>
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/20 group-focus-within:text-mint-darker transition-colors">
+                <Mail size={20} />
+              </div>
+              <input
+                name="email"
+                type="email"
+                placeholder="ten@ví-dụ.com"
+                required
+                className="w-full h-14 pl-12 pr-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:border-mint-primary focus:ring-4 focus:ring-mint-primary/10 transition-all font-medium text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Mật khẩu</label>
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/20 group-focus-within:text-mint-darker transition-colors">
+                <Lock size={20} />
+              </div>
+              <input
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                required
+                className="w-full h-14 pl-12 pr-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:border-mint-primary focus:ring-4 focus:ring-mint-primary/10 transition-all font-medium text-sm"
+              />
+            </div>
           </div>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-14 text-white font-black rounded-2xl shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 bg-mint-darker shadow-mint-darker/20 hover:shadow-mint-darker/30 disabled:opacity-50"
+          className="w-full h-16 text-white font-black rounded-2xl shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 bg-slate-900 shadow-slate-900/10 hover:bg-slate-800 disabled:opacity-50 text-[11px] uppercase tracking-[0.2em]"
         >
-          {loading ? "Đang xử lý..." : "Đăng ký tài khoản"}
+          {loading ? "Đang xử lý..." : "Bắt đầu hành trình"}
           <ArrowRight size={20} />
         </button>
       </form>
