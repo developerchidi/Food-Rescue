@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🥗 Food Rescue - Trao đi món ngon, Nhận lại nụ cười
 
-## Getting Started
+**Food Rescue** là một nền tảng công nghệ giúp kết nối các nhà hàng, cửa hàng thực phẩm có thực phẩm dư thừa với những người cần giải cứu món ngon với giá cực kỳ ưu đãi. Chúng tôi hướng tới mục tiêu giảm thiểu lãng phí thực phẩm và bảo vệ môi trường.
 
-First, run the development server:
+![Marketplace Preview](/C:/Users/nguye/.gemini/antigravity/brain/47ca618c-183c-41fb-88a7-fefd8744e804/marketplace_new_layout_1769260855205.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Tính năng nổi bật
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Khám phá Đa năng**: Chế độ xem Danh sách (List) và Bản đồ (Map) trực quan giúp bạn dễ dàng tìm thấy món ngon quanh mình.
+- **Dòng thực phẩm "Giải cứu"**: Hỗ trợ nhiều loại hình như Combo, Món đơn lẻ và đặc biệt là **Hộp Mystery** đầy bất ngờ.
+- **Quy trình Thông minh**: Hệ thống chọn món, xác nhận và nhận hàng qua mã QR cực kỳ bảo mật và tiện lợi.
+- **Bảo mật tối thượng**: Tích hợp các lớp kiểm tra quyền sở hữu (Ownership check) và bảo mật Server-side.
+- **Giao diện Minimalist-Pro**: Thiết kế tinh gọn, hiện đại, tập trung vào trải nghiệm người dùng.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠 Kiến trúc Công nghệ (Stack)
 
-## Learn More
+- **Frontend**: Next.js 15 (App Router), Tailwind CSS 4, Lucide Icons.
+- **Backend & DB**: Prisma ORM, PostgreSQL (Supabase).
+- **Xác thực**: NextAuth.js v5 (Auth.js).
+- **Bản đồ**: Leaflet.js.
+- **UI/UX**: Framer Motion (micro-animations), Bento Grid Layout.
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Hướng dẫn Cài đặt
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Clone dự án**:
+   ```bash
+   git clone https://github.com/nguyen-duc-thanh/Food-Recuse.git
+   cd Food-Recuse
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Cài đặt phụ thuộc**:
+   ```bash
+   npm install
+   ```
 
-## Deploy on Vercel
+3. **Cấu hình môi trường**:
+   Tạo tệp `.env` và cấu hình các biến môi trường sau:
+   ```env
+   DATABASE_URL="..."
+   AUTH_SECRET="..."
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. **Khởi chạy cơ sở dữ liệu**:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Chạy Production/Development**:
+   ```bash
+   npm run dev
+   ```
+
+## 🏗 Quy trình Quản lý Dự án (Git Strategy)
+
+Dự án áp dụng mô hình **GitHub Flow** chuyên nghiệp để đảm bảo tính ổn định của mã nguồn:
+
+- **Branch `main`**: Chứa phiên bản ổn định nhất của sản phẩm.
+- **Branch `develop`**: Nơi tích hợp và kiểm thử các tính năng mới.
+- **Nhánh phụ**: Luôn được đặt tên theo chuẩn `/`:
+  - `feature/` : Phát triển tính năng mới.
+  - `bugfix/` : Sửa các lỗi được phát triển trong giai đoạn dev.
+  - `hotfix/` : Sửa lỗi khẩn cấp trên Production.
+
+## 🤝 Đóng góp
+
+Mọi ý kiến đóng góp và Pull Request luôn được hoan nghênh. Hãy tham khảo tệp [CONTRIBUTING.md] hoặc liên hệ trực tiếp với chúng tôi.
+
+---
+
+*Hành động nhỏ, tác động lớn. Cùng Food Rescue bảo vệ hành tinh của chúng ta!* nội dung chính
