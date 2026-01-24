@@ -1,0 +1,74 @@
+import { MapPin, Navigation } from "lucide-react";
+
+export default function MapSection() {
+  return (
+    <section id="map" className="py-24 bg-[#fdfcf8]">
+      <div className="container mx-auto px-6">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
+          {/* Mockup Bản đồ */}
+          <div className="w-full lg:w-1/2 relative">
+            <div className="aspect-[4/3] rounded-[4rem] bg-[#e9f7f4] border-8 border-white shadow-2xl relative overflow-hidden group">
+              {/* Giả lập lưới bản đồ */}
+              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#2d5a27_1px,transparent_1px)] [background-size:40px_40px]" />
+
+              {/* Markers giả lập */}
+              {[
+                { top: '20%', left: '30%', color: 'text-orange-primary', delay: 'animate-bounce' },
+                { top: '50%', left: '60%', color: 'text-mint-darker', delay: 'animate-bounce [animation-delay:0.5s]' },
+                { top: '70%', left: '25%', color: 'text-blue-500', delay: 'animate-bounce [animation-delay:1s]' },
+              ].map((m, i) => (
+                <div key={i} className={`absolute ${m.delay}`} style={{ top: m.top, left: m.left }}>
+                  <div className={`relative flex items-center justify-center`}>
+                    <MapPin className={`w-12 h-12 ${m.color} drop-shadow-lg`} />
+                    <div className="absolute -inset-2 bg-current opacity-20 rounded-full blur-xl" />
+                  </div>
+                </div>
+              ))}
+
+              {/* Tag "Vị trí của bạn" */}
+              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 px-6 py-3 bg-white rounded-2xl shadow-xl flex items-center gap-3 border border-black/5">
+                <div className="w-3 h-3 bg-blue-500 rounded-full animate-ping" />
+                <span className="font-bold text-sm">Vị trí của bạn (Quận 1, TP.HCM)</span>
+              </div>
+            </div>
+
+            {/* Thẻ trôi nổi bổ sung */}
+            <div className="absolute -top-8 -right-8 p-6 bg-white rounded-3xl shadow-2xl animate-float max-w-[200px] border border-black/5 hidden md:block">
+              <Navigation className="text-mint-darker mb-2" />
+              <div className="text-sm font-bold">12 cửa hàng</div>
+              <div className="text-xs text-foreground/40 mt-1">Sẵn sàng trong bán kính 2km</div>
+            </div>
+          </div>
+
+          {/* Nội dung text */}
+          <div className="w-full lg:w-1/2">
+            <div className="inline-block px-4 py-1.5 mb-6 rounded-full bg-blue-50 border border-blue-100">
+              <span className="text-sm font-bold text-blue-600">Tính năng sắp tới</span>
+            </div>
+            <h2 className="text-5xl font-black mb-8 leading-tight text-[#2d3436]">
+              Tìm thực phẩm <br />
+              <span className="text-blue-600">quanh bạn</span>
+            </h2>
+            <p className="text-lg text-foreground/60 mb-10 leading-relaxed">
+              Dễ dàng theo dõi các địa điểm đang có ưu đãi giải cứu theo thời gian thực. Bản đồ thông minh giúp bạn tìm thấy bữa ăn ngon nhất chỉ với vài bước chân.
+            </p>
+            <div className="space-y-6">
+              {[
+                "Hiển thị khoảng cách chính xác",
+                "Chỉ đường trực quan qua Google Maps",
+                "Thông báo ngay khi quán yêu thích có đồ mới"
+              ].map((text, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-blue-600" />
+                  </div>
+                  <span className="font-bold text-[#2d3436]">{text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

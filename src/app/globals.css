@@ -1,26 +1,119 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdfcf8;
+  /* Creamy white */
+  --foreground: #2d3436;
+  /* Soft charcoal */
+
+  /* Pastel Palette */
+  --mint-primary: #a8e6cf;
+  --mint-light: #dcedc1;
+  --mint-dark: #2d5a27;
+  /* Darker green for buttons */
+  --peach-accent: #ffd3b6;
+  --peach-deep: #ffaaa5;
+  --sage: #81a49c;
+  --orange-primary: #f16b24;
+  --mint-darker: #009975;
+
+  /* Design Tokens for Nested Corner Radius */
+  --bento-outer-radius: 1.5rem;
+  /* 32px */
+  --bento-padding: 0.5625rem;
+  /* 12px */
+  --bento-inner-radius: calc(var(--bento-outer-radius) - var(--bento-padding));
+  /* 20px */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-mint-primary: var(--mint-primary);
+  --color-mint-light: var(--mint-light);
+  --color-mint-dark: var(--mint-dark);
+  --color-peach-accent: var(--peach-accent);
+  --color-peach-deep: var(--peach-deep);
+  --color-sage: var(--sage);
+  --color-orange-primary: var(--orange-primary);
+  --color-mint-darker: var(--mint-darker);
+  --font-sans: 'Inter', system-ui, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Custom Utilities */
+  --radius-bento: var(--bento-outer-radius);
+  --radius-bento-inner: var(--bento-inner-radius);
+  --spacing-bento: var(--bento-padding);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1.5px solid rgba(168, 230, 207, 0.3);
+}
+
+.bento-card {
+  border-radius: var(--bento-outer-radius);
+  border: 1px solid var(--mint-dark);
+  background: white;
+  padding: var(--bento-padding);
+  transition: all 0.3s ease;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 3s ease-in-out 1.5s infinite;
+}
+
+/* Leaflet Map Styles */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 1.5rem;
+  z-index: 10;
+}
+
+.leaflet-popup-content-wrapper {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.leaflet-popup-close-button {
+  padding: 12px !important;
+  color: var(--mint-dark) !important;
+  z-index: 50;
+  font-weight: bold;
+}
+
+.leaflet-popup-tip-container {
+  display: none !important;
 }
