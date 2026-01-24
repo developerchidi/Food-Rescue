@@ -54,6 +54,53 @@
    npm run dev
    ```
 
+## 🐳 Docker Deployment (Khuyến nghị cho Team)
+
+### Chạy với Docker Compose (Cách dễ nhất)
+
+1. **Tạo file `.env`** (copy từ `.env.example`):
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Chỉnh sửa `.env`** với các giá trị phù hợp:
+   ```env
+   DATABASE_URL="postgresql://fooduser:foodpassword@db:5432/food_rescue"
+   AUTH_SECRET="your-secret-key-here"
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
+
+3. **Build và chạy tất cả services**:
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Chạy Prisma migrations** (lần đầu tiên):
+   ```bash
+   docker-compose exec app npx prisma db push
+   ```
+
+5. **Truy cập ứng dụng**:
+   - App: http://localhost:3000
+   - Database: localhost:5555
+   - Redis: localhost:6379
+
+### Các lệnh Docker hữu ích
+
+```bash
+# Dừng tất cả services
+docker-compose down
+
+# Xem logs
+docker-compose logs -f app
+
+# Rebuild chỉ app service
+docker-compose up --build app
+
+# Xóa volumes (reset database)
+docker-compose down -v
+```
+
 ## 🏗 Quy trình Quản lý Dự án (Git Strategy)
 
 Dự án áp dụng mô hình **GitHub Flow** chuyên nghiệp để đảm bảo tính ổn định của mã nguồn:
