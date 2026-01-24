@@ -1,34 +1,4 @@
 services:
-  db:
-    image: postgres:15-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: fooduser
-      POSTGRES_PASSWORD: foodpassword
-      POSTGRES_DB: food_rescue
-    ports:
-      - "5555:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U fooduser" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   app:
     build:
       context: .
@@ -36,20 +6,7 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://fooduser:foodpassword@db:5432/food_rescue
-      - NEXTAUTH_URL=http://localhost:3000
-      - NODE_ENV=production
     env_file:
       - .env
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    volumes:
-      - ./prisma:/app/prisma
-
-volumes:
-  postgres_data:
-  redis_data:
+    environment:
+      - NODE_ENV=production

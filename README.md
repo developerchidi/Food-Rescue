@@ -56,49 +56,79 @@
 
 ## 🐳 Docker Deployment (Khuyến nghị cho Team)
 
-### Chạy với Docker Compose (Cách dễ nhất)
+> **Lưu ý**: Dự án sử dụng **Supabase** cho database, nên bạn cần có sẵn Supabase project trước khi chạy Docker.
 
-1. **Tạo file `.env`** (copy từ `.env.example`):
-   ```bash
-   cp .env.example .env
-   ```
+### Quy trình Setup cho Team Members
 
-2. **Chỉnh sửa `.env`** với các giá trị phù hợp:
-   ```env
-   DATABASE_URL="postgresql://fooduser:foodpassword@db:5432/food_rescue"
-   AUTH_SECRET="your-secret-key-here"
-   NEXTAUTH_URL="http://localhost:3000"
-   ```
+#### Bước 1: Clone Repository
+```bash
+git clone https://github.com/nguyen-duc-thanh/Food-Recuse.git
+cd Food-Recuse
+```
 
-3. **Build và chạy tất cả services**:
-   ```bash
-   docker-compose up --build
-   ```
+#### Bước 2: Tạo file `.env`
+```bash
+cp .env.example .env
+```
 
-4. **Chạy Prisma migrations** (lần đầu tiên):
-   ```bash
-   docker-compose exec app npx prisma db push
-   ```
+Sau đó chỉnh sửa `.env` với thông tin Supabase của bạn:
+```env
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@[YOUR-PROJECT-REF].supabase.co:5432/postgres"
+AUTH_SECRET="your-random-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
-5. **Truy cập ứng dụng**:
-   - App: http://localhost:3000
-   - Database: localhost:5555
-   - Redis: localhost:6379
+#### Bước 3: Setup Database (Chỉ lần đầu tiên)
+Trước khi chạy Docker, cần setup database schema trên Supabase:
+```bash
+# Cài dependencies local (chỉ để chạy Prisma)
+npm install
+
+# Generate Prisma Client
+npx prisma generate
+
+# Push schema lên Supabase
+npx prisma db push
+```
+
+#### Bước 4: Build và Chạy Docker
+```bash
+docker-compose up --build
+```
+
+#### Bước 5: Truy cập ứng dụng
+- App: http://localhost:3000
 
 ### Các lệnh Docker hữu ích
 
 ```bash
-# Dừng tất cả services
+# Dừng container
 docker-compose down
 
 # Xem logs
 docker-compose logs -f app
 
-# Rebuild chỉ app service
-docker-compose up --build app
+# Rebuild app
+docker-compose up --build
 
-# Xóa volumes (reset database)
-docker-compose down -v
+# Chạy ở background
+docker-compose up -d
+```
+
+### Development Local (Không dùng Docker)
+
+Nếu bạn muốn chạy development server local:
+
+```bash
+# Cài dependencies
+npm install
+
+# Setup database
+npx prisma generate
+npx prisma db push
+
+# Chạy dev server
+npm run dev
 ```
 
 ## 🏗 Quy trình Quản lý Dự án (Git Strategy)
