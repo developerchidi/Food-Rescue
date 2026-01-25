@@ -54,35 +54,68 @@
    npm run dev
    ```
 
-## 🐳 Docker Setup
+## 🐳 Docker Deployment (Khuyến nghị cho Team)
 
-For team members who want to run the project using Docker, we provide a comprehensive guide:
+> **Lưu ý**: Dự án sử dụng **Supabase** cho database, nên bạn cần có sẵn Supabase project trước khi chạy Docker.
 
-📖 **[Read the Complete Docker Setup Guide →](./DOCKER.md)**
+### Quy trình Setup cho Team Members
 
-### Quick Start with Docker
-
+#### Bước 1: Clone Repository
 ```bash
-# 1. Clone and navigate to project
-git clone https://github.com/developerchidi/Food-Rescue.git
-cd Food-Rescue
-
-# 2. Copy environment file
-cp .env.example .env
-# Edit .env with your credentials
-
-# 3. Build and run
-docker-compose up --build
-
-# 4. Run migrations (in another terminal)
-docker-compose exec app npx prisma migrate deploy
+git clone https://github.com/nguyen-duc-thanh/Food-Recuse.git
+cd Food-Recuse
 ```
 
-The application will be available at **http://localhost:3000**
+#### Bước 2: Tạo file `.env`
+```bash
+cp .env.example .env
+```
 
-For detailed instructions, troubleshooting, and production deployment, see [DOCKER.md](./DOCKER.md).
+Sau đó chỉnh sửa `.env` với thông tin Supabase của bạn:
+```env
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@[YOUR-PROJECT-REF].supabase.co:5432/postgres"
+AUTH_SECRET="your-random-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
-### Development Local (Without Docker)
+#### Bước 3: Setup Database (Chỉ lần đầu tiên)
+Trước khi chạy Docker, cần setup database schema trên Supabase:
+```bash
+# Cài dependencies local (chỉ để chạy Prisma)
+npm install
+
+# Generate Prisma Client
+npx prisma generate
+
+# Push schema lên Supabase
+npx prisma db push
+```
+
+#### Bước 4: Build và Chạy Docker
+```bash
+docker-compose up --build
+```
+
+#### Bước 5: Truy cập ứng dụng
+- App: http://localhost:3000
+
+### Các lệnh Docker hữu ích
+
+```bash
+# Dừng container
+docker-compose down
+
+# Xem logs
+docker-compose logs -f app
+
+# Rebuild app
+docker-compose up --build
+
+# Chạy ở background
+docker-compose up -d
+```
+
+### Development Local (Không dùng Docker)
 
 Nếu bạn muốn chạy development server local:
 
