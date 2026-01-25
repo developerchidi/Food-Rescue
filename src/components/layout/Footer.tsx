@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
 
 export default function Footer() {
+  const pathname = usePathname();
+
   return (
     <footer className="bg-white border-t border-black/5 pt-24 pb-12">
       <div className="container mx-auto px-6">
@@ -27,13 +32,52 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-black mb-4 text-[#2d3436]">Khám phá</h4>
             <ul className="space-y-2">
-              {["Trang chủ", "Bản đồ thực phẩm", "Về chúng tôi", "Đối tác & Merchant", "Tác động cộng đồng"].map((link, i) => (
-                <li key={i}>
-                  <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
-                    {link}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link 
+                  href="/" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Trang chủ
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/marketplace" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/marketplace" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Bản đồ thực phẩm
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/about" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/about" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Về chúng tôi
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
+                  Đối tác & Merchant
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
+                  Tác động cộng đồng
+                </Link>
+              </li>
             </ul>
           </div>
 
