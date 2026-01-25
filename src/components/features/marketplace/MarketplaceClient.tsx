@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Map as MapIcon, List, Filter, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Map as MapIcon, List, Filter, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, Navigation } from "lucide-react";
 import FoodCard from "../FoodCard";
 import dynamic from "next/dynamic";
+import { calculateDistance, getUserLocation, formatDistance } from "@/lib/geolocation";
 
 interface MarketplaceClientProps {
   initialData: any[];
@@ -26,13 +27,29 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // in km
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
   const ITEMS_PER_PAGE = 8;
 
   const filteredPosts = initialData.filter((post) => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.donor.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === "all" || post.type === activeCategory;
-    return matchesSearch && matchesCategory;
+
+    // Distance filter
+    let matchesDistance = true;
+    if (distanceFilter && userLocation && post.donor.latitude && post.donor.longitude) {
+      const distance = calculateDistance(
+        userLocation.lat,
+        userLocation.lng,
+        post.donor.latitude,
+        post.donor.longitude
+      );
+      matchesDistance = distance <= distanceFilter;
+    }
+
+    return matchesSearch && matchesCategory && matchesDistance;
   });
 
   // Reset to page 1 when filters change
@@ -44,6 +61,23 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
   const handleCategoryChange = (val: string) => {
     setActiveCategory(val);
     setCurrentPage(1);
+  };
+
+  const handleDistanceChange = (val: number | null) => {
+    setDistanceFilter(val);
+    setCurrentPage(1);
+  };
+
+  const handleGetLocation = async () => {
+    setIsGettingLocation(true);
+    try {
+      const location = await getUserLocation();
+      setUserLocation(location);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Không thể lấy vị trí');
+    } finally {
+      setIsGettingLocation(false);
+    }
   };
 
   const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
@@ -122,6 +156,56 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
                 active={activeCategory === "INDIVIDUAL"}
                 onClick={() => handleCategoryChange("INDIVIDUAL")}
               />
+            </div>
+
+            {/* Distance Filter */}
+            <div className="space-y-3 pt-6 border-t border-black/5">
+              <div className="font-bold text-sm text-foreground/40 uppercase tracking-widest mb-4 px-1 flex items-center justify-between">
+                Khoảng cách
+                {!userLocation && (
+                  <button
+                    onClick={handleGetLocation}
+                    disabled={isGettingLocation}
+                    className="text-xs font-black text-mint-darker hover:text-mint-dark transition-colors flex items-center gap-1 normal-case tracking-normal"
+                  >
+                    <Navigation size={12} className={isGettingLocation ? 'geolocation-loading' : ''} />
+                    {isGettingLocation ? 'Đang lấy...' : 'Vị trí của tôi'}
+                  </button>
+                )}
+              </div>
+              {userLocation ? (
+                <>
+                  <FilterChip
+                    label="Tất cả"
+                    active={distanceFilter === null}
+                    onClick={() => handleDistanceChange(null)}
+                  />
+                  <FilterChip
+                    label="Trong 1km"
+                    active={distanceFilter === 1}
+                    onClick={() => handleDistanceChange(1)}
+                  />
+                  <FilterChip
+                    label="Trong 3km"
+                    active={distanceFilter === 3}
+                    onClick={() => handleDistanceChange(3)}
+                  />
+                  <FilterChip
+                    label="Trong 5km"
+                    active={distanceFilter === 5}
+                    onClick={() => handleDistanceChange(5)}
+                  />
+                  <FilterChip
+                    label="Trong 10km"
+                    active={distanceFilter === 10}
+                    onClick={() => handleDistanceChange(10)}
+                  />
+                </>
+              ) : (
+                <p className="text-xs text-foreground/40 italic px-1">
+                  Cho phép truy cập vị trí để lọc theo khoảng cách
+                </p>
+              )}
             </div>
           </div>
 
@@ -215,7 +299,13 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
               )}
             </>
           ) : (
-            <MapView posts={filteredPosts} />
+            <MapView
+              posts={filteredPosts}
+              userLocation={userLocation}
+              distanceFilter={distanceFilter}
+              onLocationRequest={handleGetLocation}
+              isGettingLocation={isGettingLocation}
+            />
           )}
         </div>
       </div>

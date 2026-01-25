@@ -54,68 +54,35 @@
    npm run dev
    ```
 
-## 🐳 Docker Deployment (Khuyến nghị cho Team)
+## 🐳 Docker Setup
 
-> **Lưu ý**: Dự án sử dụng **Supabase** cho database, nên bạn cần có sẵn Supabase project trước khi chạy Docker.
+For team members who want to run the project using Docker, we provide a comprehensive guide:
 
-### Quy trình Setup cho Team Members
+📖 **[Read the Complete Docker Setup Guide →](./DOCKER.md)**
 
-#### Bước 1: Clone Repository
+### Quick Start with Docker
+
 ```bash
-git clone https://github.com/nguyen-duc-thanh/Food-Recuse.git
-cd Food-Recuse
-```
+# 1. Clone and navigate to project
+git clone https://github.com/developerchidi/Food-Rescue.git
+cd Food-Rescue
 
-#### Bước 2: Tạo file `.env`
-```bash
+# 2. Copy environment file
 cp .env.example .env
-```
+# Edit .env with your credentials
 
-Sau đó chỉnh sửa `.env` với thông tin Supabase của bạn:
-```env
-DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@[YOUR-PROJECT-REF].supabase.co:5432/postgres"
-AUTH_SECRET="your-random-secret-key-here"
-NEXTAUTH_URL="http://localhost:3000"
-```
-
-#### Bước 3: Setup Database (Chỉ lần đầu tiên)
-Trước khi chạy Docker, cần setup database schema trên Supabase:
-```bash
-# Cài dependencies local (chỉ để chạy Prisma)
-npm install
-
-# Generate Prisma Client
-npx prisma generate
-
-# Push schema lên Supabase
-npx prisma db push
-```
-
-#### Bước 4: Build và Chạy Docker
-```bash
-docker-compose up --build
-```
-
-#### Bước 5: Truy cập ứng dụng
-- App: http://localhost:3000
-
-### Các lệnh Docker hữu ích
-
-```bash
-# Dừng container
-docker-compose down
-
-# Xem logs
-docker-compose logs -f app
-
-# Rebuild app
+# 3. Build and run
 docker-compose up --build
 
-# Chạy ở background
-docker-compose up -d
+# 4. Run migrations (in another terminal)
+docker-compose exec app npx prisma migrate deploy
 ```
 
-### Development Local (Không dùng Docker)
+The application will be available at **http://localhost:3000**
+
+For detailed instructions, troubleshooting, and production deployment, see [DOCKER.md](./DOCKER.md).
+
+### Development Local (Without Docker)
 
 Nếu bạn muốn chạy development server local:
 
