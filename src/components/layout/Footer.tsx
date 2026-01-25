@@ -69,7 +69,14 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
+                <Link 
+                  href="/partners" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/partners" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
                   Đối tác & Merchant
                 </Link>
               </li>
