@@ -148,7 +148,14 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
+                <Link 
+                  href="/contact" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/contact" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
                   Liên hệ hợp tác
                 </Link>
               </li>
