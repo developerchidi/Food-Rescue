@@ -1,14 +1,17 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap, Circle } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useState } from "react";
 import FoodCard from "../FoodCard";
-import { Maximize2, X, MapPin, Clock, ShoppingCart, Info } from "lucide-react";
+import { Maximize2, X, MapPin, Clock, ShoppingCart, Info, Navigation, ExternalLink } from "lucide-react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { getMarkerIcon, userLocationIcon, createClusterCustomIcon } from "@/lib/mapIcons";
+import { calculateDistance, formatDistance } from "@/lib/geolocation";
 
 // Fix for default marker icons in Leaflet with Next.js
 const DefaultIcon = L.icon({
@@ -20,6 +23,10 @@ const DefaultIcon = L.icon({
 
 interface MapViewProps {
   posts: any[];
+  userLocation: { lat: number; lng: number } | null;
+  distanceFilter: number | null;
+  onLocationRequest: () => void;
+  isGettingLocation: boolean;
 }
 
 function ZoomHandler({ onZoomChange }: { onZoomChange: (zoom: number) => void }) {
@@ -45,7 +52,18 @@ function PopupSync({ selectedPost }: { selectedPost: any }) {
   return null;
 }
 
-export default function MapView({ posts }: MapViewProps) {
+// Component to auto-center map on user location
+function MapCenterController({ center }: { center: [number, number] | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, 14, { duration: 1.5 });
+    }
+  }, [center, map]);
+  return null;
+}
+
+export default function MapView({ posts, userLocation, distanceFilter, onLocationRequest, isGettingLocation }: MapViewProps) {
   const router = useRouter();
   const [zoom, setZoom] = useState(13);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -104,7 +122,7 @@ export default function MapView({ posts }: MapViewProps) {
               {selectedPost.title}
             </h2>
 
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-4 mb-8 flex-wrap">
               <div className="flex items-center gap-2 text-sm font-bold text-orange-primary bg-orange-50 px-3 py-1.5 rounded-xl">
                 <Clock size={16} />
                 {new Date(selectedPost.expiryDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -112,6 +130,17 @@ export default function MapView({ posts }: MapViewProps) {
               <div className="text-sm font-bold text-foreground/30 uppercase tracking-widest">
                 {selectedPost.type === "MYSTERY_BOX" ? "Mystery Box" : "Món đơn lẻ"}
               </div>
+              {userLocation && selectedPost.donor.latitude && selectedPost.donor.longitude && (
+                <div className="flex items-center gap-2 text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl">
+                  <Navigation size={16} />
+                  {formatDistance(calculateDistance(
+                    userLocation.lat,
+                    userLocation.lng,
+                    selectedPost.donor.latitude,
+                    selectedPost.donor.longitude
+                  ))}
+                </div>
+              )}
             </div>
 
             <p className="text-foreground/60 leading-relaxed mb-8 italic">
@@ -141,6 +170,18 @@ export default function MapView({ posts }: MapViewProps) {
                 <ShoppingCart size={22} />
                 {selectedPost.quantity === 0 ? "Đã hết" : "Giải cứu ngay"}
               </button>
+              {selectedPost.donor.latitude && selectedPost.donor.longitude && (
+                <button
+                  onClick={() => {
+                    const url = `https://www.google.com/maps/dir/?api=1&destination=${selectedPost.donor.latitude},${selectedPost.donor.longitude}`;
+                    window.open(url, '_blank');
+                  }}
+                  className="w-full h-16 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 transition-all flex items-center justify-center gap-3"
+                >
+                  <ExternalLink size={22} />
+                  Chỉ đường
+                </button>
+              )}
               <button className="w-full h-16 bg-white border-2 border-black/5 text-[#2d3436] font-black rounded-2xl hover:bg-black/5 transition-all flex items-center justify-center gap-3">
                 <Info size={22} />
                 Xem chi tiết cửa hàng
@@ -151,6 +192,18 @@ export default function MapView({ posts }: MapViewProps) {
       )}
 
       <div className="flex-grow relative h-full">
+        {/* Geolocation Button */}
+        {!userLocation && (
+          <button
+            onClick={onLocationRequest}
+            disabled={isGettingLocation}
+            className="absolute top-4 left-4 z-[1000] bg-white p-3 rounded-xl shadow-lg border border-black/5 hover:bg-blue-50 transition-all text-blue-600 flex items-center justify-center disabled:opacity-50"
+            title="Vị trí của tôi"
+          >
+            <Navigation size={24} className={isGettingLocation ? 'geolocation-loading' : ''} />
+          </button>
+        )}
+
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="absolute top-4 right-4 z-[1000] bg-white p-3 rounded-xl shadow-lg border border-black/5 hover:bg-black/5 transition-all text-mint-darker flex items-center justify-center"
@@ -168,62 +221,102 @@ export default function MapView({ posts }: MapViewProps) {
         >
           <ZoomHandler onZoomChange={setZoom} />
           <PopupSync selectedPost={selectedPost} />
+          <MapCenterController center={userLocation ? [userLocation.lat, userLocation.lng] : null} />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {posts.map((post) => (
-            post.donor.latitude && post.donor.longitude && (
+
+          {/* User Location Marker */}
+          {userLocation && (
+            <>
               <Marker
-                key={post.id}
-                position={[post.donor.latitude, post.donor.longitude]}
-                icon={DefaultIcon}
-                eventHandlers={{
-                  click: () => {
-                    if (isExpanded) {
-                      setSelectedPost(post);
-                    }
-                  },
-                }}
+                position={[userLocation.lat, userLocation.lng]}
+                icon={userLocationIcon}
               >
-                <Popup
-                  className="food-popup"
-                  minWidth={320 * scale}
-                  maxWidth={320 * scale}
-                  eventHandlers={{
-                    remove: () => {
-                      if (isExpanded) setSelectedPost(null);
-                    }
-                  }}
-                >
-                  <div
-                    style={{
-                      transform: `scale(${scale})`,
-                      transformOrigin: 'bottom center',
-                      width: '320px',
-                      borderRadius: '2rem',
-                      overflow: 'hidden',
-                      boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
-                      background: 'white'
-                    }}
-                  >
-                    <FoodCard
-                      id={post.id}
-                      title={post.title}
-                      description={post.description}
-                      imageUrl={post.imageUrl}
-                      originalPrice={post.originalPrice}
-                      rescuePrice={post.rescuePrice}
-                      quantity={post.quantity}
-                      expiryDate={post.expiryDate}
-                      donorName={post.donor.name}
-                      type={post.type}
-                    />
+                <Popup>
+                  <div className="text-center font-bold">
+                    Vị trí của bạn
                   </div>
                 </Popup>
               </Marker>
-            )
-          ))}
+              {distanceFilter && (
+                <Circle
+                  center={[userLocation.lat, userLocation.lng]}
+                  radius={distanceFilter * 1000} // Convert km to meters
+                  pathOptions={{
+                    color: '#3b82f6',
+                    fillColor: '#3b82f6',
+                    fillOpacity: 0.1,
+                    weight: 2,
+                  }}
+                />
+              )}
+            </>
+          )}
+
+          {/* Food Markers with Clustering */}
+          <MarkerClusterGroup
+            chunkedLoading
+            iconCreateFunction={createClusterCustomIcon}
+            spiderfyOnMaxZoom={true}
+            showCoverageOnHover={false}
+            zoomToBoundsOnClick={true}
+            maxClusterRadius={60}
+          >
+            {posts.map((post) => (
+              post.donor.latitude && post.donor.longitude && (
+                <Marker
+                  key={post.id}
+                  position={[post.donor.latitude, post.donor.longitude]}
+                  icon={getMarkerIcon(post)}
+                  eventHandlers={{
+                    click: () => {
+                      if (isExpanded) {
+                        setSelectedPost(post);
+                      }
+                    },
+                  }}
+                >
+                  <Popup
+                    className="food-popup"
+                    minWidth={320 * scale}
+                    maxWidth={320 * scale}
+                    eventHandlers={{
+                      remove: () => {
+                        if (isExpanded) setSelectedPost(null);
+                      }
+                    }}
+                  >
+                    <div
+                      style={{
+                        transform: `scale(${scale})`,
+                        transformOrigin: 'bottom center',
+                        width: '320px',
+                        borderRadius: '2rem',
+                        overflow: 'hidden',
+                        boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+                        background: 'white'
+                      }}
+                    >
+                      <FoodCard
+                        id={post.id}
+                        title={post.title}
+                        description={post.description}
+                        imageUrl={post.imageUrl}
+                        originalPrice={post.originalPrice}
+                        rescuePrice={post.rescuePrice}
+                        quantity={post.quantity}
+                        expiryDate={post.expiryDate}
+                        donorName={post.donor.name}
+                        type={post.type}
+                      />
+                    </div>
+                  </Popup>
+                </Marker>
+              )
+            ))}
+          </MarkerClusterGroup>
         </MapContainer>
       </div>
     </div>

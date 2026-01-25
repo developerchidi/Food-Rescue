@@ -117,3 +117,163 @@ body {
 .leaflet-popup-tip-container {
   display: none !important;
 }
+
+/* Fix for Lucide Icons in Leaflet Popups */
+.leaflet-popup-content svg {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.leaflet-popup-content button svg,
+.leaflet-popup-content .bento-card svg {
+  display: inline-block !important;
+  width: 1em !important;
+  height: 1em !important;
+}
+
+/* Custom Marker Styles */
+.custom-marker-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.custom-marker {
+  width: 40px;
+  height: 40px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  animation: markerBounce 0.5s ease-out;
+}
+
+.custom-marker:hover {
+  transform: rotate(-45deg) scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.custom-marker svg {
+  transform: rotate(45deg);
+  color: white;
+}
+
+.custom-marker.mystery-box {
+  background: linear-gradient(135deg, #a855f7 0%, #f97316 100%);
+}
+
+.custom-marker.single-item {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.custom-marker.urgent {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  animation: urgentPulse 1.5s ease-in-out infinite;
+}
+
+.custom-marker.user-location {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 50%;
+  transform: none;
+  animation: locationPulse 2s ease-in-out infinite;
+}
+
+.custom-marker.user-location svg {
+  transform: none;
+}
+
+@keyframes markerBounce {
+  0% {
+    transform: rotate(-45deg) translateY(-20px);
+    opacity: 0;
+  }
+
+  50% {
+    transform: rotate(-45deg) translateY(5px);
+  }
+
+  100% {
+    transform: rotate(-45deg) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes urgentPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.8);
+  }
+}
+
+@keyframes locationPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+
+  50% {
+    box-shadow: 0 0 0 15px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Marker Cluster Styles */
+.marker-cluster {
+  background: transparent;
+  border: none;
+}
+
+.marker-cluster .cluster-inner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.marker-cluster:hover .cluster-inner {
+  transform: scale(1.15);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.marker-cluster-small .cluster-inner {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.marker-cluster-medium .cluster-inner {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.marker-cluster-large .cluster-inner {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Geolocation Button Animation */
+@keyframes geolocationSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.geolocation-loading {
+  animation: geolocationSpin 1s linear infinite;
+}
