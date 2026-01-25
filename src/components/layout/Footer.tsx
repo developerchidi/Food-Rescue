@@ -99,13 +99,38 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-black mb-4 text-[#2d3436]">Hỗ trợ</h4>
             <ul className="space-y-2">
-              {["Điều khoản sử dụng", "Chính sách bảo mật", "Câu hỏi thường gặp", "Trung tâm trợ giúp", "Liên hệ hợp tác"].map((link, i) => (
-                <li key={i}>
-                  <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
-                    {link}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link 
+                  href="/terms" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/terms" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Điều khoản sử dụng
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
+                  Chính sách bảo mật
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
+                  Câu hỏi thường gặp
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
+                  Trung tâm trợ giúp
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
+                  Liên hệ hợp tác
+                </Link>
+              </li>
             </ul>
           </div>
 
