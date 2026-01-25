@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Map as MapIcon, List, Filter, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, Navigation } from "lucide-react";
 import FoodCard from "../FoodCard";
 import dynamic from "next/dynamic";
@@ -52,21 +52,10 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
     return matchesSearch && matchesCategory && matchesDistance;
   });
 
-  // Reset to page 1 when filters change
-  const handleSearchChange = (val: string) => {
-    setSearchQuery(val);
+  // Reset to page 1 when view mode changes or filters change significantly
+  useEffect(() => {
     setCurrentPage(1);
-  };
-
-  const handleCategoryChange = (val: string) => {
-    setActiveCategory(val);
-    setCurrentPage(1);
-  };
-
-  const handleDistanceChange = (val: number | null) => {
-    setDistanceFilter(val);
-    setCurrentPage(1);
-  };
+  }, [viewMode, searchQuery, activeCategory, distanceFilter]);
 
   const handleGetLocation = async () => {
     setIsGettingLocation(true);
@@ -96,7 +85,7 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
             type="text"
             placeholder="Tìm món ăn, nhà hàng hoặc khu vực..."
             value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-16 pl-14 pr-6 bg-white border border-black/5 rounded-[2rem] focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium text-lg shadow-sm"
           />
         </div>
@@ -144,17 +133,17 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
               <FilterChip
                 label="Tất cả bữa ăn"
                 active={activeCategory === "all"}
-                onClick={() => handleCategoryChange("all")}
+                onClick={() => setActiveCategory("all")}
               />
               <FilterChip
                 label="Mystery Boxes"
                 active={activeCategory === "MYSTERY_BOX"}
-                onClick={() => handleCategoryChange("MYSTERY_BOX")}
+                onClick={() => setActiveCategory("MYSTERY_BOX")}
               />
               <FilterChip
                 label="Món đơn lẻ"
                 active={activeCategory === "INDIVIDUAL"}
-                onClick={() => handleCategoryChange("INDIVIDUAL")}
+                onClick={() => setActiveCategory("INDIVIDUAL")}
               />
             </div>
 
@@ -178,27 +167,27 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
                   <FilterChip
                     label="Tất cả"
                     active={distanceFilter === null}
-                    onClick={() => handleDistanceChange(null)}
+                    onClick={() => setDistanceFilter(null)}
                   />
                   <FilterChip
                     label="Trong 1km"
                     active={distanceFilter === 1}
-                    onClick={() => handleDistanceChange(1)}
+                    onClick={() => setDistanceFilter(1)}
                   />
                   <FilterChip
                     label="Trong 3km"
                     active={distanceFilter === 3}
-                    onClick={() => handleDistanceChange(3)}
+                    onClick={() => setDistanceFilter(3)}
                   />
                   <FilterChip
                     label="Trong 5km"
                     active={distanceFilter === 5}
-                    onClick={() => handleDistanceChange(5)}
+                    onClick={() => setDistanceFilter(5)}
                   />
                   <FilterChip
                     label="Trong 10km"
                     active={distanceFilter === 10}
-                    onClick={() => handleDistanceChange(10)}
+                    onClick={() => setDistanceFilter(10)}
                   />
                 </>
               ) : (
@@ -243,7 +232,7 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,320px))] justify-center gap-6">
                   {paginatedPosts.map((post) => (
                     <FoodCard
                       key={post.id}
