@@ -124,7 +124,14 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
+                <Link 
+                  href="/faq" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/faq" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
                   Câu hỏi thường gặp
                 </Link>
               </li>
