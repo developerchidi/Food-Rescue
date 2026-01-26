@@ -8,17 +8,58 @@ import nodemailer from 'nodemailer';
 // I'll assume standard, if error, I'll fix.
 
 import { getSupportEmailTemplate } from '@/lib/templates/supportEmail';
+import { getPartnershipEmailTemplate } from '@/lib/templates/partnershipEmail';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, message } = body;
+    const {
+      name,
+      email,
+      message,
+      source = 'SUPPORT', // Default to SUPPORT
+      company,
+      phone,
+      type
+    } = body;
 
+    // Common Validation
     if (!name || !email || !message) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
+    }
+
+    // Prepare DB Data and Email Content based on Source
+    let dbMessage = message;
+    let emailContent;
+
+    if (source === 'PARTNERSHIP') {
+      // For Partnership: Combine extra fields into DB message
+      dbMessage = `
+[YÊU CẦU HỢP TÁC]
+Công ty: ${company || 'N/A'}
+SĐT: ${phone || 'N/A'}
+Loại hình: ${type || 'N/A'}
+----------------
+Nội dung:
+${message}
+      `.trim();
+
+      // Use Partnership Template
+      emailContent = getPartnershipEmailTemplate(
+        name,
+        email,
+        company || 'N/A',
+        phone || 'N/A',
+        type || 'N/A',
+        message
+      );
+
+    } else {
+      // For Support: Use Standard Template
+      emailContent = getSupportEmailTemplate(name, email, message);
     }
 
     // 1. Save to Database
@@ -27,7 +68,7 @@ export async function POST(request: Request) {
         data: {
           name,
           email,
-          message,
+          message: dbMessage, // Store combined string
           status: 'PENDING'
         }
       });
@@ -43,21 +84,20 @@ export async function POST(request: Request) {
         const transporter = nodemailer.createTransport({
           host: process.env.SMTP_HOST,
           port: Number(process.env.SMTP_PORT) || 587,
-          secure: false, // true for 465, false for other ports
+          secure: false,
           auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS,
           },
         });
 
-        const { subject, text, html } = getSupportEmailTemplate(name, email, message);
-
+        // Send using the selected content
         await transporter.sendMail({
           from: `"Food Rescue Support" <${process.env.SMTP_USER}>`,
           to: process.env.ADMIN_EMAIL || "admin@foodrescue.vn",
-          subject,
-          text,
-          html,
+          subject: emailContent.subject,
+          text: emailContent.text,
+          html: emailContent.html,
         });
         console.log("Email sent successfully");
       } catch (emailError) {
