@@ -51,23 +51,23 @@ export default function HelpPage() {
   return (
     <main className="min-h-screen bg-[#fdfcf8]">
       <Navbar />
-      
+
       <div className="pt-32 pb-24">
-        <div className="container mx-auto px-6 max-w-6xl">
+        <div className="container mx-auto px-6 max-w-8xl">
           {/* Hero Section */}
           <div className="text-center mb-16">
-            <div className="w-20 h-20 bg-mint-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            {/* <div className="w-20 h-20 bg-mint-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <HelpCircle className="w-10 h-10 text-mint-darker" />
-            </div>
+            </div> */}
             <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-[#2d3436]">
               Trung tâm <span className="text-mint-darker">Trợ giúp</span>
             </h1>
             <p className="text-lg text-foreground/70 max-w-2xl mx-auto mb-8">
               Chúng tôi ở đây để giúp bạn! Tìm câu trả lời, xem hướng dẫn hoặc liên hệ với đội ngũ hỗ trợ của chúng tôi.
             </p>
-            
+
             {/* Search Bar */}
-            <div className="relative max-w-2xl mx-auto">
+            <div className="relative max-w-8xl mx-auto">
               <input
                 type="text"
                 placeholder="Tìm kiếm câu trả lời..."
@@ -87,10 +87,12 @@ export default function HelpPage() {
                   href={category.link}
                   className="bg-white rounded-2xl p-6 border border-black/5 hover:border-mint-primary/30 transition-all group"
                 >
-                  <div className={`w-14 h-14 ${category.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <category.icon className={`w-7 h-7 ${category.iconColor}`} />
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className={`w-14 h-14 ${category.color} rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                      <category.icon className={`w-7 h-7 ${category.iconColor}`} />
+                    </div>
+                    <h3 className="text-xl font-black text-[#2d3436]">{category.title}</h3>
                   </div>
-                  <h3 className="text-xl font-black mb-2 text-[#2d3436]">{category.title}</h3>
                   <p className="text-foreground/60 text-sm leading-relaxed">{category.description}</p>
                 </Link>
               ))}
@@ -121,7 +123,7 @@ export default function HelpPage() {
             <div className="text-center mb-12">
               <h2 className="text-4xl font-black mb-4">Vẫn cần hỗ trợ?</h2>
               <p className="text-xl text-white/70 max-w-2xl mx-auto">
-                Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp đỡ bạn 24/7. 
+                Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp đỡ bạn 24/7.
                 Liên hệ với chúng tôi qua các kênh sau:
               </p>
             </div>
