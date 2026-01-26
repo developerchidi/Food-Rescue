@@ -167,7 +167,7 @@ Trân trọng,
       </div>
 
       <div style="text-align: center;">
-        <a href="mailto:${email}" class="cta-button">Phản hồi ngay</a>
+        <a href="mailto:${email}?subject=${encodeURIComponent(`Re: [Food Rescue] Phản hồi yêu cầu hỗ trợ`)}&body=${encodeURIComponent(`Chào ${name},\n\nCảm ơn bạn đã liên hệ với Food Rescue.\n\n[Nhập nội dung phản hồi của bạn tại đây]\n\nTrân trọng,\nĐội ngũ Food Rescue`)}" class="cta-button">Phản hồi ngay</a>
       </div>
     </div>
 
