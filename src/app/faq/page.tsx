@@ -1,12 +1,27 @@
+"use client";
+
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { HelpCircle, ShoppingCart, CreditCard, Truck, Shield, User, Gift, MapPin } from "lucide-react";
+import { HelpCircle, ShoppingCart, CreditCard, Truck, Shield, User, Gift, MapPin, Search, ChevronDown, Minus, Plus, Phone, Mail, MessageCircle } from "lucide-react";
+import { useState, useMemo } from "react";
 
 export default function FAQPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
+  const toggleItem = (categoryIndex: number, questionIndex: number) => {
+    const key = `${categoryIndex}-${questionIndex}`;
+    setExpandedItems(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
   const faqCategories = [
     {
       icon: ShoppingCart,
       title: "Mua hàng & Đơn hàng",
+      description: "Hướng dẫn đặt hàng, thay đổi và hủy đơn",
       questions: [
         {
           q: "Làm thế nào để đặt mua thực phẩm giải cứu?",
@@ -29,6 +44,7 @@ export default function FAQPage() {
     {
       icon: CreditCard,
       title: "Thanh toán",
+      description: "Phương thức, hoàn tiền và bảo mật",
       questions: [
         {
           q: "Các phương thức thanh toán nào được chấp nhận?",
@@ -47,6 +63,7 @@ export default function FAQPage() {
     {
       icon: Truck,
       title: "Vận chuyển & Nhận hàng",
+      description: "Giao hàng, phí ship và điểm nhận hàng",
       questions: [
         {
           q: "Tôi có thể chọn phương thức nhận hàng nào?",
@@ -69,6 +86,7 @@ export default function FAQPage() {
     {
       icon: User,
       title: "Tài khoản",
+      description: "Đăng ký, bảo mật và cài đặt",
       questions: [
         {
           q: "Làm thế nào để đăng ký tài khoản?",
@@ -91,6 +109,7 @@ export default function FAQPage() {
     {
       icon: Gift,
       title: "Mystery Box & Ưu đãi",
+      description: "Quà tặng bất ngờ và mã giảm giá",
       questions: [
         {
           q: "Mystery Box là gì?",
@@ -109,6 +128,7 @@ export default function FAQPage() {
     {
       icon: Shield,
       title: "Bảo mật & An toàn",
+      description: "Chính sách và cam kết chất lượng",
       questions: [
         {
           q: "Thông tin của tôi có được bảo mật không?",
@@ -126,91 +146,188 @@ export default function FAQPage() {
     }
   ];
 
+  // Filtering Logic
+  const filteredCategories = useMemo(() => {
+    if (!searchQuery) return faqCategories;
+
+    const query = searchQuery.toLowerCase();
+
+    return faqCategories.map(cat => ({
+      ...cat,
+      questions: cat.questions.filter(q =>
+        q.q.toLowerCase().includes(query) ||
+        q.a.toLowerCase().includes(query)
+      )
+    })).filter(cat => cat.questions.length > 0);
+  }, [searchQuery]);
+
   return (
     <main className="min-h-screen bg-[#fdfcf8]">
       <Navbar />
-      
+
       <div className="pt-32 pb-24">
-        <div className="container mx-auto px-6 max-w-5xl">
+        <div className="container mx-auto px-6 max-w-8xl">
           {/* Hero Section */}
-          <div className="text-center mb-16">
-            <div className="w-20 h-20 bg-mint-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="text-center mb-4 relative">
+            {/* <div className="w-20 h-20 bg-mint-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-8 transform -rotate-3 border border-mint-primary/20">
               <HelpCircle className="w-10 h-10 text-mint-darker" />
-            </div>
+            </div> */}
+
             <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-[#2d3436]">
-              Câu hỏi <span className="text-mint-darker">Thường gặp</span>
+              Câu hỏi <span className="text-mint-darker relative inline-block">
+                Thường gặp
+                {/* <svg className="absolute w-full h-3 -bottom-1 left-0 text-mint-accent/30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path width="100%" height="100%" d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
+                </svg> */}
+              </span>
             </h1>
-            <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
-              Tìm câu trả lời cho những thắc mắc phổ biến về Food Rescue. 
-              Không tìm thấy câu trả lời? Liên hệ với chúng tôi!
-            </p>
-          </div>
 
-          {/* Search Bar */}
-          <div className="mb-12">
-            <div className="relative max-w-2xl mx-auto">
-              <input
-                type="text"
-                placeholder="Tìm kiếm câu hỏi..."
-                className="w-full h-14 pl-14 pr-6 bg-white border border-black/5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium text-lg shadow-sm"
-              />
-              <HelpCircle className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/30" size={22} />
+            <p className="text-xl text-foreground/60 max-w-2xl mx-auto mb-10 leading-relaxed">
+              Bạn có thắc mắc? Đừng lo, chúng tôi đã tổng hợp những câu hỏi phổ biến nhất tại đây để giúp bạn.
+            </p>
+
+            {/* Search Bar */}
+            <div className="max-w-8xl mx-auto relative z-10">
+              <div className="relative group">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Nhập từ khóa để tìm kiếm (ví dụ: thanh toán, hủy đơn...)"
+                  className="w-full h-16 pl-14 pr-6 bg-white border border-black/5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-mint-primary/10 focus:border-mint-primary/30 transition-all font-medium text-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] placeholder:text-gray-400 group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]"
+                />
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-mint-darker transition-colors" size={24} />
+              </div>
             </div>
           </div>
 
-          {/* FAQ Categories */}
-          <div className="space-y-12">
-            {faqCategories.map((category, categoryIndex) => (
-              <section key={categoryIndex} className="bg-white rounded-2xl p-8 lg:p-10 border border-black/5">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-14 h-14 bg-mint-primary/10 rounded-xl flex items-center justify-center">
-                    <category.icon className="w-7 h-7 text-mint-darker" />
-                  </div>
-                  <h2 className="text-3xl font-black text-[#2d3436]">{category.title}</h2>
-                </div>
-                
-                <div className="space-y-6">
-                  {category.questions.map((faq, faqIndex) => (
-                    <div key={faqIndex} className="border-b border-black/5 last:border-0 pb-6 last:pb-0">
-                      <h3 className="text-xl font-black mb-3 text-[#2d3436] flex items-start gap-3">
-                        <span className="text-mint-darker font-black shrink-0">Q:</span>
-                        <span>{faq.q}</span>
-                      </h3>
-                      <p className="text-foreground/70 leading-relaxed ml-8">
-                        <span className="text-mint-darker font-bold">A: </span>
-                        {faq.a}
-                      </p>
+          {/* Results Stats */}
+          {searchQuery && (
+            <div className="text-start mb-4 animate-in fade-in slide-in-from-bottom-2">
+              <p className="text-foreground/60 font-medium bg-white inline-block px-4 py-2 rounded-full border border-black/5">
+                Tìm thấy {filteredCategories.reduce((acc, cat) => acc + cat.questions.length, 0)} kết quả cho "{searchQuery}"
+              </p>
+            </div>
+          )}
+
+          {/* FAQ Content */}
+          <div className="space-y-4">
+            {filteredCategories.length > 0 ? (
+              filteredCategories.map((category, catIndex) => (
+                <div
+                  key={catIndex}
+                  className="bg-white rounded-[1.5rem] p-4 border border-black/5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
+                >
+                  {/* Category Header */}
+                  <div className="flex items-start md:items-center gap-5 mb-4 pb-4 border-b border-gray-100">
+                    <div className="w-16 h-16 bg-mint-primary/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <category.icon className="w-8 h-8 text-mint-darker" />
                     </div>
-                  ))}
+                    <div>
+                      <h2 className="text-2xl font-black text-[#2d3436] mb-1">{category.title}</h2>
+                      <p className="text-foreground/60">{category.description}</p>
+                    </div>
+                  </div>
+
+                  {/* Questions Accordion */}
+                  <div className="space-y-3">
+                    {category.questions.map((faq, index) => {
+                      const isOpen = expandedItems[`${catIndex}-${index}`];
+                      return (
+                        <div
+                          key={index}
+                          className={`rounded-xl transition-all duration-300 ${isOpen ? 'bg-mint-primary/5' : 'hover:bg-gray-50'}`}
+                        >
+                          <button
+                            onClick={() => toggleItem(catIndex, index)}
+                            className="w-full text-left px-6 py-4 flex items-start justify-between gap-4"
+                          >
+                            <span className={`font-bold text-lg leading-relaxed ${isOpen ? 'text-mint-darker' : 'text-[#2d3436]'}`}>
+                              {faq.q}
+                            </span>
+                            <span className={`shrink-0 mt-1 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                              {isOpen ? (
+                                <div className="w-6 h-6 bg-mint-darker text-white rounded-full flex items-center justify-center">
+                                  <Minus size={14} strokeWidth={3} />
+                                </div>
+                              ) : (
+                                <div className="w-6 h-6 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center group-hover:bg-mint-primary/20 group-hover:text-mint-darker transition-colors">
+                                  <Plus size={14} strokeWidth={3} />
+                                </div>
+                              )}
+                            </span>
+                          </button>
+
+                          <div
+                            className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                          >
+                            <div className="overflow-hidden">
+                              <p className="px-6 pb-6 text-foreground/70 leading-relaxed">
+                                {faq.a}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </section>
-            ))}
+              ))
+            ) : (
+              <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Không tìm thấy kết quả</h3>
+                <p className="text-gray-500 max-w-sm mx-auto">
+                  Chúng tôi không tìm thấy câu trả lời nào phù hợp với từ khóa của bạn. Hãy thử tìm kiếm với từ khóa khác hoặc liên hệ trực tiếp.
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Contact Section */}
-          <section className="mt-16 bg-mint-primary/10 rounded-2xl p-8 lg:p-10 border border-mint-primary/20">
-            <div className="text-center">
-              <h3 className="text-3xl font-black mb-4 text-[#2d3436]">Vẫn còn thắc mắc?</h3>
-              <p className="text-lg text-foreground/70 mb-8 max-w-2xl mx-auto">
-                Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp đỡ bạn. 
-                Liên hệ với chúng tôi qua các kênh sau:
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <div className="flex items-center gap-3 px-6 py-3 bg-white rounded-xl border border-black/5">
-                  <MapPin className="text-mint-darker" size={20} />
-                  <span className="font-bold text-foreground/70">Tòa nhà Green Tech, Q1, HCM</span>
+          {/* Contact CTA */}
+          <section className="mt-8">
+            <div className="bg-[#2d3436] rounded-[1.5rem] p-10 md:p-14 text-white relative overflow-hidden">
+              {/* Decorative circles */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-mint-primary opacity-10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-peach-primary opacity-10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"></div>
+
+              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+                <div className="text-center md:text-left max-w-xl">
+                  <h2 className="text-3xl md:text-4xl font-black mb-4">Vẫn còn thắc mắc?</h2>
+                  <p className="text-white/60 text-lg leading-relaxed mb-8">
+                    Nếu bạn không tìm thấy câu trả lời mình cần, đừng ngần ngại liên hệ với đội ngũ hỗ trợ thân thiện của chúng tôi.
+                  </p>
+
+                  <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                    <a href="tel:1900123456" className="flex items-center gap-3 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all border border-white/10 font-medium">
+                      <Phone size={20} className="text-mint-primary" />
+                      <span>1900 123 456</span>
+                    </a>
+                    <a href="mailto:support@foodrescue.vn" className="flex items-center gap-3 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all border border-white/10 font-medium">
+                      <Mail size={20} className="text-peach-primary" />
+                      <span>support@foodrescue.vn</span>
+                    </a>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 px-6 py-3 bg-white rounded-xl border border-black/5">
-                  <Shield className="text-mint-darker" size={20} />
-                  <span className="font-bold text-foreground/70">support@foodrescue.vn</span>
-                </div>
-                <div className="flex items-center gap-3 px-6 py-3 bg-white rounded-xl border border-black/5">
-                  <User className="text-mint-darker" size={20} />
-                  <span className="font-bold text-foreground/70">1900 123 456</span>
+
+                <div className="shrink-0 bg-white/5 p-2 rounded-3xl border border-white/10 backdrop-blur-sm">
+                  <div className="bg-white/5 rounded-2xl p-6 text-center w-full md:w-64">
+                    {/* <div className="w-16 h-16 bg-mint-primary rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#2d3436] shadow-lg shadow-mint-primary/20">
+                      <MessageCircle size={32} strokeWidth={2.5} />
+                    </div> */}
+                    <h3 className="font-bold text-xl mb-1">Chat ngay</h3>
+                    <p className="text-white/50 text-sm mb-4">Phản hồi trong 5 phút</p>
+                    <button className="w-full py-3 bg-white text-[#2d3436] font-black rounded-xl hover:bg-mint-light transition-colors">
+                      Bắt đầu chat
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
+
         </div>
       </div>
 
