@@ -1,19 +1,35 @@
+"use client";
+
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Handshake, Mail, Phone, MapPin, Send, Building2, Users, Briefcase } from "lucide-react";
+import { Handshake, Mail, Phone, MapPin, Send, Building2, Users, Briefcase, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 
 export default function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    setIsSubmitting(false);
+    setIsSuccess(true);
+
+    // Reset form after 5 seconds or allow user to close (simplified for now)
+  };
+
   return (
     <main className="min-h-screen bg-[#fdfcf8]">
       <Navbar />
-      
+
       <div className="pt-32 pb-24">
-        <div className="container mx-auto px-6 max-w-6xl">
+        <div className="container mx-auto px-6 max-w-8xl">
           {/* Hero Section */}
           <div className="text-center mb-16">
-            <div className="w-20 h-20 bg-mint-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Handshake className="w-10 h-10 text-mint-darker" />
-            </div>
             <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-[#2d3436]">
               Liên hệ <span className="text-mint-darker">Hợp tác</span>
             </h1>
@@ -23,7 +39,7 @@ export default function ContactPage() {
           </div>
 
           {/* Partnership Types */}
-          <section className="mb-16">
+          <section className="mb-6">
             <h2 className="text-3xl font-black mb-8 text-center text-[#2d3436]">Các hình thức hợp tác</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
@@ -50,10 +66,12 @@ export default function ContactPage() {
                 }
               ].map((type, i) => (
                 <div key={i} className="bg-white rounded-2xl p-8 border border-black/5 hover:border-mint-primary/30 transition-all">
-                  <div className={`w-16 h-16 ${type.color} rounded-xl flex items-center justify-center mb-6`}>
-                    <type.icon className={`w-8 h-8 ${type.iconColor}`} />
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className={`w-14 h-14 ${type.color} rounded-xl flex items-center justify-center shrink-0`}>
+                      <type.icon className={`w-7 h-7 ${type.iconColor}`} />
+                    </div>
+                    <h3 className="text-xl font-black text-[#2d3436]">{type.title}</h3>
                   </div>
-                  <h3 className="text-xl font-black mb-3 text-[#2d3436]">{type.title}</h3>
                   <p className="text-foreground/60 leading-relaxed">{type.description}</p>
                 </div>
               ))}
@@ -61,99 +79,135 @@ export default function ContactPage() {
           </section>
 
           {/* Contact Form & Info */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Contact Form */}
-            <section className="bg-white rounded-2xl p-8 lg:p-10 border border-black/5">
-              <h2 className="text-3xl font-black mb-6 text-[#2d3436]">Gửi yêu cầu hợp tác</h2>
-              <p className="text-foreground/60 mb-8 leading-relaxed">
-                Điền thông tin bên dưới và chúng tôi sẽ liên hệ với bạn trong vòng 24-48 giờ.
-              </p>
-              
-              <form className="space-y-6">
-                <div>
-                  <label className="block text-sm font-black text-[#2d3436] mb-2">
-                    Tên công ty / Tổ chức <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Nhập tên công ty của bạn"
-                    className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-black text-[#2d3436] mb-2">
-                    Họ và tên <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Nhập họ và tên của bạn"
-                    className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-black text-[#2d3436] mb-2">
-                    Email <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="your@email.com"
-                    className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-black text-[#2d3436] mb-2">
-                    Số điện thoại <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="0123 456 789"
-                    className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-black text-[#2d3436] mb-2">
-                    Loại hình hợp tác <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    required
-                    className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium"
+            <section className="bg-white rounded-2xl p-8 lg:p-10 border border-black/5 lg:col-span-2 relative overflow-hidden">
+              {isSuccess ? (
+                <div className="absolute inset-0 bg-white flex flex-col items-center justify-center text-center p-8 animate-in fade-in zoom-in duration-300">
+                  <div className="w-20 h-20 bg-mint-primary/20 text-mint-darker rounded-full flex items-center justify-center mb-6">
+                    <CheckCircle2 size={40} className="animate-bounce" />
+                  </div>
+                  <h3 className="text-3xl font-black text-[#2d3436] mb-4">Gửi yêu cầu thành công!</h3>
+                  <p className="text-foreground/60 max-w-md mx-auto mb-8">
+                    Cảm ơn bạn đã quan tâm. Đội ngũ Food Rescue sẽ liên hệ lại với bạn qua email hoặc số điện thoại trong vòng 24 giờ tới.
+                  </p>
+                  <button
+                    onClick={() => { setIsSuccess(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    className="px-8 py-3 bg-mint-primary/10 text-mint-darker font-bold rounded-xl hover:bg-mint-primary/20 transition-all"
                   >
-                    <option value="">Chọn loại hình hợp tác</option>
-                    <option value="restaurant">Đối tác Nhà hàng</option>
-                    <option value="community">Đối tác Cộng đồng</option>
-                    <option value="business">Đối tác Doanh nghiệp</option>
-                    <option value="other">Khác</option>
-                  </select>
+                    Gửi yêu cầu khác
+                  </button>
                 </div>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-black mb-6 text-[#2d3436]">Gửi yêu cầu hợp tác</h2>
+                  <p className="text-foreground/60 mb-8 leading-relaxed">
+                    Điền thông tin bên dưới và chúng tôi sẽ liên hệ với bạn trong vòng 24-48 giờ.
+                  </p>
 
-                <div>
-                  <label className="block text-sm font-black text-[#2d3436] mb-2">
-                    Mô tả đề xuất hợp tác <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    required
-                    rows={5}
-                    placeholder="Vui lòng mô tả chi tiết về đề xuất hợp tác của bạn..."
-                    className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium resize-none"
-                  />
-                </div>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-black text-[#2d3436] mb-2">
+                        Tên công ty / Tổ chức <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        disabled={isSubmitting}
+                        placeholder="Nhập tên công ty của bạn"
+                        className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium disabled:opacity-50 disabled:bg-gray-50"
+                      />
+                    </div>
 
-                <button
-                  type="submit"
-                  className="w-full h-14 bg-mint-darker text-white font-black rounded-xl hover:bg-mint-dark transition-all shadow-xl shadow-mint-darker/20 flex items-center justify-center gap-3"
-                >
-                  <Send size={20} />
-                  Gửi yêu cầu hợp tác
-                </button>
-              </form>
+                    <div>
+                      <label className="block text-sm font-black text-[#2d3436] mb-2">
+                        Họ và tên <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        disabled={isSubmitting}
+                        placeholder="Nhập họ và tên của bạn"
+                        className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium disabled:opacity-50 disabled:bg-gray-50"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-black text-[#2d3436] mb-2">
+                        Email <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        disabled={isSubmitting}
+                        placeholder="your@email.com"
+                        className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium disabled:opacity-50 disabled:bg-gray-50"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-black text-[#2d3436] mb-2">
+                        Số điện thoại <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        disabled={isSubmitting}
+                        placeholder="0123 456 789"
+                        className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium disabled:opacity-50 disabled:bg-gray-50"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-black text-[#2d3436] mb-2">
+                        Loại hình hợp tác <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        required
+                        disabled={isSubmitting}
+                        className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium disabled:opacity-50 disabled:bg-gray-50"
+                      >
+                        <option value="">Chọn loại hình hợp tác</option>
+                        <option value="restaurant">Đối tác Nhà hàng</option>
+                        <option value="community">Đối tác Cộng đồng</option>
+                        <option value="business">Đối tác Doanh nghiệp</option>
+                        <option value="other">Khác</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-black text-[#2d3436] mb-2">
+                        Mô tả đề xuất hợp tác <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        required
+                        disabled={isSubmitting}
+                        rows={5}
+                        placeholder="Vui lòng mô tả chi tiết về đề xuất hợp tác của bạn..."
+                        className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium resize-none disabled:opacity-50 disabled:bg-gray-50"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full h-14 bg-mint-darker text-white font-black rounded-xl hover:bg-mint-dark transition-all shadow-xl shadow-mint-darker/20 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Đang gửi...
+                        </>
+                      ) : (
+                        <>
+                          <Send size={20} className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                          Gửi yêu cầu hợp tác
+                        </>
+                      )}
+                    </button>
+                  </form>
+                </>
+              )}
             </section>
 
             {/* Contact Information */}
