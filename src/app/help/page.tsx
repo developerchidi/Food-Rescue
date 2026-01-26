@@ -1,9 +1,16 @@
+"use client";
+
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { HelpCircle, MessageCircle, Book, Video, Mail, Phone, Send, Search } from "lucide-react";
+import { HelpCircle, MessageCircle, Book, Video, Mail, Phone, Send, Search, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function HelpPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const helpCategories = [
     {
       icon: Book,
@@ -48,6 +55,39 @@ export default function HelpPage() {
     { title: "Câu hỏi thường gặp", link: "/faq" }
   ];
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    setIsSubmitting(false);
+    setIsSuccess(true);
+  };
+
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Search Filtering Logic
+  const filteredCategories = helpCategories.filter(cat =>
+    cat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    cat.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredLinks = quickLinks.filter(link =>
+    link.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const hasResults = filteredCategories.length > 0 || filteredLinks.length > 0;
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
+
+  const handleChatClick = () => {
+    alert("Đang kết nối với nhân viên hỗ trợ...\n(Tính năng Chat sẽ sớm ra mắt!)");
+  };
+
   return (
     <main className="min-h-screen bg-[#fdfcf8]">
       <Navbar />
@@ -55,10 +95,7 @@ export default function HelpPage() {
       <div className="pt-32 pb-24">
         <div className="container mx-auto px-6 max-w-8xl">
           {/* Hero Section */}
-          <div className="text-center mb-16">
-            {/* <div className="w-20 h-20 bg-mint-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <HelpCircle className="w-10 h-10 text-mint-darker" />
-            </div> */}
+          <div className="text-center mb-16 relative z-10">
             <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-[#2d3436]">
               Trung tâm <span className="text-mint-darker">Trợ giúp</span>
             </h1>
@@ -66,14 +103,80 @@ export default function HelpPage() {
               Chúng tôi ở đây để giúp bạn! Tìm câu trả lời, xem hướng dẫn hoặc liên hệ với đội ngũ hỗ trợ của chúng tôi.
             </p>
 
-            {/* Search Bar */}
+            {/* Search Bar Container */}
             <div className="relative max-w-8xl mx-auto">
-              <input
-                type="text"
-                placeholder="Tìm kiếm câu trả lời..."
-                className="w-full h-16 pl-16 pr-6 bg-white border border-black/5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium text-lg shadow-sm"
-              />
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/30" size={24} />
+              <form onSubmit={handleSearch} className="relative z-20">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+                  placeholder="Tìm kiếm câu trả lời..."
+                  className={`w-full h-16 pl-16 pr-6 bg-white border rounded-2xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 transition-all font-medium text-lg shadow-sm ${isFocused && searchQuery ? 'rounded-b-none border-b-0 border-mint-primary/30' : 'border-black/5 focus:border-mint-primary/30'
+                    }`}
+                />
+                <button type="submit" className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/30 hover:text-mint-darker transition-colors">
+                  <Search size={24} />
+                </button>
+              </form>
+
+              {/* Dropdown Results */}
+              {isFocused && searchQuery && (
+                <div className="absolute top-16 left-0 right-0 bg-white border border-t-0 border-mint-primary/30 rounded-b-2xl shadow-xl overflow-hidden z-10 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {!hasResults ? (
+                    <div className="p-8 text-center">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Search size={24} className="text-gray-400" />
+                      </div>
+                      <p className="text-foreground/60 font-medium">
+                        Không tìm thấy kết quả nào cho "{searchQuery}"
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="max-h-[60vh] overflow-y-auto">
+                      {filteredCategories.length > 0 && (
+                        <div className="p-2">
+                          <h4 className="px-4 py-2 text-xs font-bold text-foreground/40 uppercase tracking-wider">Danh mục</h4>
+                          {filteredCategories.map((category, i) => (
+                            <Link
+                              key={i}
+                              href={category.link}
+                              className="flex items-center gap-4 p-4 hover:bg-mint-primary/5 rounded-xl transition-colors group"
+                            >
+                              <div className={`w-10 h-10 ${category.color} rounded-lg flex items-center justify-center shrink-0`}>
+                                <category.icon className={`w-5 h-5 ${category.iconColor}`} />
+                              </div>
+                              <div className="text-left">
+                                <h3 className="font-bold text-[#2d3436] group-hover:text-mint-darker transition-colors">{category.title}</h3>
+                                <p className="text-sm text-foreground/60 line-clamp-1">{category.description}</p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+
+                      {filteredLinks.length > 0 && (
+                        <div className="p-2 border-t border-black/5">
+                          <h4 className="px-4 py-2 text-xs font-bold text-foreground/40 uppercase tracking-wider">Liên kết nhanh</h4>
+                          {filteredLinks.map((link, i) => (
+                            <Link
+                              key={i}
+                              href={link.link}
+                              className="flex items-center gap-3 p-4 hover:bg-mint-primary/5 rounded-xl transition-colors group"
+                            >
+                              <HelpCircle className="w-5 h-5 text-mint-darker/60 group-hover:text-mint-darker transition-colors" />
+                              <span className="font-medium text-foreground/70 group-hover:text-mint-darker transition-colors">
+                                {link.title}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -99,101 +202,130 @@ export default function HelpPage() {
             </div>
           </section>
 
-          {/* Quick Links */}
-          <section className="mb-16">
-            <h2 className="text-3xl font-black mb-8 text-center text-[#2d3436]">Liên kết nhanh</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {quickLinks.map((link, i) => (
-                <Link
-                  key={i}
-                  href={link.link}
-                  className="bg-white rounded-xl p-4 border border-black/5 hover:border-mint-primary/30 hover:bg-mint-primary/5 transition-all flex items-center gap-3 group"
-                >
-                  <HelpCircle className="w-5 h-5 text-mint-darker group-hover:scale-110 transition-transform" />
-                  <span className="font-medium text-foreground/70 group-hover:text-mint-darker transition-colors">
-                    {link.title}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* Contact Support */}
-          <section className="bg-mint-darker rounded-[3rem] p-12 lg:p-16 text-white">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-black mb-4">Vẫn cần hỗ trợ?</h2>
-              <p className="text-xl text-white/70 max-w-2xl mx-auto">
-                Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp đỡ bạn 24/7.
-                Liên hệ với chúng tôi qua các kênh sau:
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center border border-white/10">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageCircle className="w-8 h-8 text-white" />
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-16 items-start">
+            {/* Quick Links - Sidebar Style */}
+            <section className="lg:col-span-2 space-y-6">
+              <div className="bg-white rounded-3xl p-8 border border-black/5 h-full">
+                <h2 className="text-2xl font-black mb-6 text-[#2d3436]">Liên kết nhanh</h2>
+                <div className="grid grid-cols-1 gap-3">
+                  {quickLinks.map((link, i) => (
+                    <Link
+                      key={i}
+                      href={link.link}
+                      className="group flex items-center gap-4 p-4 rounded-xl hover:bg-mint-primary/5 border border-transparent hover:border-mint-primary/20 transition-all bg-gray-50"
+                    >
+                      <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shrink-0 shadow-sm text-mint-darker group-hover:scale-110 transition-transform">
+                        <HelpCircle size={20} />
+                      </div>
+                      <span className="font-bold text-foreground/70 group-hover:text-mint-darker transition-colors">{link.title}</span>
+                    </Link>
+                  ))}
                 </div>
-                <h3 className="text-xl font-black mb-2">Chat trực tuyến</h3>
-                <p className="text-white/70 mb-4 text-sm">Trò chuyện với chúng tôi ngay bây giờ</p>
-                <button className="px-6 py-3 bg-white text-mint-darker font-black rounded-xl hover:bg-mint-light transition-all">
-                  Bắt đầu chat
-                </button>
+              </div>
+            </section>
+
+            {/* Contact Support - Compacted */}
+            <section className="lg:col-span-3 bg-mint-darker rounded-[2.5rem] p-8 lg:p-12 text-white">
+              <div className="mb-8">
+                <h2 className="text-3xl font-black mb-3">Vẫn cần hỗ trợ?</h2>
+                <p className="text-lg text-white/70">
+                  Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp đỡ bạn 24/7.
+                </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center border border-white/10">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-8 h-8 text-white" />
+              <div className="grid grid-cols-3 gap-3 mb-8">
+                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/10 hover:bg-white/15 transition-colors">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <MessageCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-bold text-sm mb-2">Chat</h3>
+                  <button onClick={handleChatClick} className="w-full py-2 bg-white text-mint-darker text-xs font-bold rounded-lg hover:bg-mint-light transition-colors">Chat ngay</button>
                 </div>
-                <h3 className="text-xl font-black mb-2">Email hỗ trợ</h3>
-                <p className="text-white/70 mb-4 text-sm">support@foodrescue.vn</p>
-                <p className="text-white/60 text-xs">Phản hồi trong vòng 24 giờ</p>
+
+                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/10 hover:bg-white/15 transition-colors">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Mail className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-bold text-sm mb-2">Email</h3>
+                  <a href="mailto:support@foodrescue.vn" className="block w-full py-2 bg-white/10 text-white text-xs font-bold rounded-lg hover:bg-white/20 transition-colors">Gửi mail</a>
+                </div>
+
+                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/10 hover:bg-white/15 transition-colors">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Phone className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-bold text-sm mb-2">Hotline</h3>
+                  <a href="tel:1900123456" className="block w-full py-2 bg-white/10 text-white text-xs font-bold rounded-lg hover:bg-white/20 transition-colors">Gọi ngay</a>
+                </div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center border border-white/10">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Phone className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-black mb-2">Hotline</h3>
-                <p className="text-white/70 mb-4 text-sm">1900 123 456</p>
-                <p className="text-white/60 text-xs">Thứ 2 - Chủ nhật: 8:00 - 22:00</p>
-              </div>
-            </div>
-
-            {/* Contact Form */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/10">
-              <h3 className="text-2xl font-black mb-6 text-center">Gửi yêu cầu hỗ trợ</h3>
-              <form className="space-y-4 max-w-2xl mx-auto">
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Tên của bạn"
-                    className="w-full h-12 px-4 bg-white/20 border border-white/20 rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="email"
-                    placeholder="Email của bạn"
-                    className="w-full h-12 px-4 bg-white/20 border border-white/20 rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
-                  />
-                </div>
-                <div>
-                  <textarea
-                    placeholder="Mô tả vấn đề của bạn..."
-                    rows={4}
-                    className="w-full px-4 py-3 bg-white/20 border border-white/20 rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all resize-none"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full h-14 bg-white text-mint-darker font-black rounded-xl hover:bg-mint-light transition-all flex items-center justify-center gap-3"
-                >
-                  <Send size={20} />
+              {/* Contact Form */}
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 relative overflow-hidden">
+                <h3 className="text-xl font-black mb-4 flex items-center gap-2">
+                  <Send size={20} className="text-white/70" />
                   Gửi yêu cầu
-                </button>
-              </form>
-            </div>
-          </section>
+                </h3>
+
+                {isSuccess ? (
+                  <div className="absolute inset-0 bg-mint-darker flex flex-col items-center justify-center text-center p-6 animate-in fade-in zoom-in duration-300 z-10">
+                    <div className="w-16 h-16 bg-white/20 text-white rounded-full flex items-center justify-center mb-4">
+                      <CheckCircle2 size={32} className="animate-bounce" />
+                    </div>
+                    <h3 className="text-2xl font-black text-white mb-2">Đã gửi!</h3>
+                    <p className="text-white/70 text-sm mb-6">Chúng tôi sẽ sớm phản hồi.</p>
+                    <button
+                      onClick={() => setIsSuccess(false)}
+                      className="px-6 py-2 bg-white text-mint-darker font-bold rounded-xl hover:bg-mint-light transition-all text-sm"
+                    >
+                      Gửi lại
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Tên của bạn"
+                        disabled={isSubmitting}
+                        className="w-full h-10 px-3 bg-white/20 border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50 text-sm"
+                      />
+                      <input
+                        type="email"
+                        required
+                        placeholder="Email"
+                        disabled={isSubmitting}
+                        className="w-full h-10 px-3 bg-white/20 border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50 text-sm"
+                      />
+                    </div>
+                    <textarea
+                      required
+                      placeholder="Mô tả vấn đề..."
+                      rows={3}
+                      disabled={isSubmitting}
+                      className="w-full px-3 py-2 bg-white/20 border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all resize-none disabled:opacity-50 text-sm"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full h-10 bg-white text-mint-darker font-bold rounded-lg hover:bg-mint-light transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-mint-darker/30 border-t-mint-darker rounded-full animate-spin" />
+                          Đang gửi...
+                        </>
+                      ) : (
+                        <>
+                          Gửi yêu cầu
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
+            </section>
+          </div>
 
           {/* Additional Resources */}
           <section className="mt-16">
