@@ -2,7 +2,7 @@
 
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { HelpCircle, MessageCircle, Book, Video, Mail, Phone, Send, Search, CheckCircle2 } from "lucide-react";
+import { HelpCircle, MessageCircle, Book, Video, Mail, Phone, Send, Search, CheckCircle2, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -55,15 +55,33 @@ export default function HelpPage() {
     { title: "Câu hỏi thường gặp", link: "/faq" }
   ];
 
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    setIsSubmitting(false);
-    setIsSuccess(true);
+      if (!response.ok) throw new Error("Failed to submit");
+
+      setIsSuccess(true);
+      setFormData({ name: "", email: "", message: "" }); // Reset form
+    } catch (error) {
+      alert("Có lỗi xảy ra. Vui lòng thử lại sáu.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const [isFocused, setIsFocused] = useState(false);
@@ -225,104 +243,134 @@ export default function HelpPage() {
             </section>
 
             {/* Contact Support - Compacted */}
-            <section className="lg:col-span-3 bg-mint-darker rounded-[2.5rem] p-8 lg:p-12 text-white">
-              <div className="mb-8">
-                <h2 className="text-3xl font-black mb-3">Vẫn cần hỗ trợ?</h2>
+            <section className="lg:col-span-3 bg-mint-darker rounded-[1.5rem] p-6 lg:p-8 text-white h-full flex flex-col">
+              <div className="mb-6 shrink-0">
+                <h2 className="text-3xl font-black mb-2">Vẫn cần hỗ trợ?</h2>
                 <p className="text-lg text-white/70">
                   Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp đỡ bạn 24/7.
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 mb-8">
-                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/10 hover:bg-white/15 transition-colors">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <MessageCircle className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="font-bold text-sm mb-2">Chat</h3>
-                  <button onClick={handleChatClick} className="w-full py-2 bg-white text-mint-darker text-xs font-bold rounded-lg hover:bg-mint-light transition-colors">Chat ngay</button>
-                </div>
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 grow">
+                {/* Left Side: Contact Form (3/5) */}
+                <div className="lg:col-span-3 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 relative overflow-hidden order-2 lg:order-1 flex flex-col">
+                  <h3 className="text-xl font-black mb-4 flex items-center gap-2 shrink-0">
+                    <Send size={20} className="text-white/70" />
+                    Gửi yêu cầu
+                  </h3>
 
-                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/10 hover:bg-white/15 transition-colors">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Mail className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="font-bold text-sm mb-2">Email</h3>
-                  <a href="mailto:support@foodrescue.vn" className="block w-full py-2 bg-white/10 text-white text-xs font-bold rounded-lg hover:bg-white/20 transition-colors">Gửi mail</a>
-                </div>
-
-                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/10 hover:bg-white/15 transition-colors">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Phone className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="font-bold text-sm mb-2">Hotline</h3>
-                  <a href="tel:1900123456" className="block w-full py-2 bg-white/10 text-white text-xs font-bold rounded-lg hover:bg-white/20 transition-colors">Gọi ngay</a>
-                </div>
-              </div>
-
-              {/* Contact Form */}
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 relative overflow-hidden">
-                <h3 className="text-xl font-black mb-4 flex items-center gap-2">
-                  <Send size={20} className="text-white/70" />
-                  Gửi yêu cầu
-                </h3>
-
-                {isSuccess ? (
-                  <div className="absolute inset-0 bg-mint-darker flex flex-col items-center justify-center text-center p-6 animate-in fade-in zoom-in duration-300 z-10">
-                    <div className="w-16 h-16 bg-white/20 text-white rounded-full flex items-center justify-center mb-4">
-                      <CheckCircle2 size={32} className="animate-bounce" />
+                  {isSuccess ? (
+                    <div className="absolute inset-0 bg-mint-darker flex flex-col items-center justify-center text-center p-6 animate-in fade-in zoom-in duration-300 z-10">
+                      <div className="w-16 h-16 bg-white/20 text-white rounded-full flex items-center justify-center mb-4">
+                        <CheckCircle2 size={32} className="animate-bounce" />
+                      </div>
+                      <h3 className="text-2xl font-black text-white mb-2">Đã gửi!</h3>
+                      <p className="text-white/70 text-sm mb-6">Chúng tôi sẽ sớm phản hồi.</p>
+                      <button
+                        onClick={() => setIsSuccess(false)}
+                        className="px-6 py-2 bg-white text-mint-darker font-bold rounded-xl hover:bg-mint-light transition-all text-sm"
+                      >
+                        Gửi lại
+                      </button>
                     </div>
-                    <h3 className="text-2xl font-black text-white mb-2">Đã gửi!</h3>
-                    <p className="text-white/70 text-sm mb-6">Chúng tôi sẽ sớm phản hồi.</p>
-                    <button
-                      onClick={() => setIsSuccess(false)}
-                      className="px-6 py-2 bg-white text-mint-darker font-bold rounded-xl hover:bg-mint-light transition-all text-sm"
-                    >
-                      Gửi lại
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <input
-                        type="text"
+                  ) : (
+                    <form onSubmit={handleSubmit} className="space-y-3 flex-1 flex flex-col">
+                      <div>
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="Tên của bạn"
+                          disabled={isSubmitting}
+                          className="w-full h-10 px-3 bg-white/20 border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50 text-base"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="Email của bạn"
+                          disabled={isSubmitting}
+                          className="w-full h-10 px-3 bg-white/20 border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50 text-base"
+                        />
+                      </div>
+                      <textarea
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
                         required
-                        placeholder="Tên của bạn"
+                        placeholder="Mô tả vấn đề..."
+                        rows={4}
                         disabled={isSubmitting}
-                        className="w-full h-10 px-3 bg-white/20 border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50 text-sm"
+                        className="w-full px-3 py-2 bg-white/20 border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all resize-none disabled:opacity-50 text-base grow"
                       />
-                      <input
-                        type="email"
-                        required
-                        placeholder="Email"
+                      <button
+                        type="submit"
                         disabled={isSubmitting}
-                        className="w-full h-10 px-3 bg-white/20 border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50 text-sm"
-                      />
+                        className="w-full h-10 bg-white text-mint-darker font-bold rounded-lg hover:bg-mint-light transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed text-base shrink-0"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-mint-darker/30 border-t-mint-darker rounded-full animate-spin" />
+                            Đang gửi...
+                          </>
+                        ) : (
+                          <>
+                            Gửi yêu cầu
+                          </>
+                        )}
+                      </button>
+                    </form>
+                  )}
+                </div>
+
+                {/* Right Side: Contact Methods (2/5) */}
+                <div className="lg:col-span-2 flex flex-col gap-6 order-1 lg:order-2 h-max">
+                  <div className="flex items-center gap-5 bg-white/10 rounded-2xl p-5 border border-white/10 hover:bg-white/15 transition-colors flex-1">
+                    <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                      <MessageCircle className="w-7 h-7 text-white" />
                     </div>
-                    <textarea
-                      required
-                      placeholder="Mô tả vấn đề..."
-                      rows={3}
-                      disabled={isSubmitting}
-                      className="w-full px-3 py-2 bg-white/20 border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all resize-none disabled:opacity-50 text-sm"
-                    />
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full h-10 bg-white text-mint-darker font-bold rounded-lg hover:bg-mint-light transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-mint-darker/30 border-t-mint-darker rounded-full animate-spin" />
-                          Đang gửi...
-                        </>
-                      ) : (
-                        <>
-                          Gửi yêu cầu
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-lg mb-1">Chat trực tuyến</h3>
+                      <button onClick={handleChatClick} className="text-white/80 text-sm md:text-base font-medium hover:text-white hover:underline transition-colors text-left truncate w-full">Bắt đầu chat ngay</button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-5 bg-white/10 rounded-2xl p-5 border border-white/10 hover:bg-white/15 transition-colors flex-1">
+                    <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                      <Mail className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-lg mb-1">Email hỗ trợ</h3>
+                      <a href="mailto:support@foodrescue.vn" className="text-white/80 text-sm md:text-base font-medium hover:text-white hover:underline transition-colors block truncate">support@foodrescue.vn</a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-5 bg-white/10 rounded-2xl p-5 border border-white/10 hover:bg-white/15 transition-colors flex-1">
+                    <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                      <Phone className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-lg mb-1">Hotline</h3>
+                      <a href="tel:1900123456" className="text-white/80 text-sm md:text-base font-medium hover:text-white hover:underline transition-colors block truncate">1900 123 456</a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-5 bg-white/10 rounded-2xl p-5 border border-white/10 hover:bg-white/15 transition-colors flex-1">
+                    <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                      <MapPin className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-lg mb-1">Văn phòng</h3>
+                      <span className="text-white/80 text-sm md:text-base font-medium block truncate">Tòa nhà Green Tech, Q1, HCM</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </section>
           </div>
