@@ -9,17 +9,49 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const [formData, setFormData] = useState({
+    company: "",
+    name: "",
+    email: "",
+    phone: "",
+    type: "",
+    message: ""
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: 'PARTNERSHIP', // Signal API to use partnership template
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+          phone: formData.phone,
+          type: formData.type,
+          message: formData.message
+        }),
+      });
 
-    setIsSubmitting(false);
-    setIsSuccess(true);
+      if (!response.ok) throw new Error("Failed to submit");
 
-    // Reset form after 5 seconds or allow user to close (simplified for now)
+      setIsSuccess(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setFormData({ company: "", name: "", email: "", phone: "", type: "", message: "" });
+    } catch (error) {
+      alert("Có lỗi xảy ra. Vui lòng thử lại sau.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -112,6 +144,9 @@ export default function ContactPage() {
                       </label>
                       <input
                         type="text"
+                        name="company"
+                        value={formData.company}
+                        onChange={handleInputChange}
                         required
                         disabled={isSubmitting}
                         placeholder="Nhập tên công ty của bạn"
@@ -125,6 +160,9 @@ export default function ContactPage() {
                       </label>
                       <input
                         type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
                         required
                         disabled={isSubmitting}
                         placeholder="Nhập họ và tên của bạn"
@@ -138,6 +176,9 @@ export default function ContactPage() {
                       </label>
                       <input
                         type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
                         required
                         disabled={isSubmitting}
                         placeholder="your@email.com"
@@ -151,6 +192,9 @@ export default function ContactPage() {
                       </label>
                       <input
                         type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
                         required
                         disabled={isSubmitting}
                         placeholder="0123 456 789"
@@ -163,15 +207,18 @@ export default function ContactPage() {
                         Loại hình hợp tác <span className="text-red-500">*</span>
                       </label>
                       <select
+                        name="type"
+                        value={formData.type}
+                        onChange={handleInputChange}
                         required
                         disabled={isSubmitting}
                         className="w-full h-12 px-4 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium disabled:opacity-50 disabled:bg-gray-50"
                       >
                         <option value="">Chọn loại hình hợp tác</option>
-                        <option value="restaurant">Đối tác Nhà hàng</option>
-                        <option value="community">Đối tác Cộng đồng</option>
-                        <option value="business">Đối tác Doanh nghiệp</option>
-                        <option value="other">Khác</option>
+                        <option value="Đối tác Nhà hàng">Đối tác Nhà hàng</option>
+                        <option value="Đối tác Cộng đồng">Đối tác Cộng đồng</option>
+                        <option value="Đối tác Doanh nghiệp">Đối tác Doanh nghiệp</option>
+                        <option value="Khác">Khác</option>
                       </select>
                     </div>
 
@@ -180,6 +227,9 @@ export default function ContactPage() {
                         Mô tả đề xuất hợp tác <span className="text-red-500">*</span>
                       </label>
                       <textarea
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
                         required
                         disabled={isSubmitting}
                         rows={5}
