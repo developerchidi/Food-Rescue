@@ -129,27 +129,43 @@ export default function AboutPage() {
 
           {/* Team Section */}
           <section className="mb-32">
-            <div className="text-center mb-16">
+            <div className="text-center mb-6">
               <h2 className="text-4xl font-black mb-4 text-[#2d3436]">Đội ngũ sáng lập</h2>
               <p className="text-foreground/60 text-lg">Những con người tâm huyết đứng sau dự án.</p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
               {[
-                { name: "Chidi", role: "Project Lead / Architect", emoji: "⚡", span: "lg:col-span-3" },
-                { name: "Nghi", role: "Frontend Lead", emoji: "🎨", span: "lg:col-span-3" },
-                { name: "Kiên", role: "Backend Dev", emoji: "⚙️", span: "lg:col-span-2" },
-                { name: "Cơ", role: "Frontend Dev", emoji: "🚀", span: "lg:col-span-2" },
-                { name: "Mẫn", role: "Frontend Dev", emoji: "✨", span: "lg:col-span-2" },
-                { name: "Toàn", role: "QA / Tester", emoji: "🛡️", span: "lg:col-span-3" },
-                { name: "Kiệt", role: "QA / Tester", emoji: "🔍", span: "lg:col-span-3" }
+                { name: "Cơ", role: "Frontend Dev", span: "lg:col-span-3", img: "/team/ichidi.png" },
+                { name: "Nghi", role: "Frontend Lead", span: "lg:col-span-3", img: "/team/nghi.png" },
+                { name: "Kiên", role: "Backend Dev", span: "lg:col-span-2", img: "/team/kien.png" },
+                { name: "Lộc", role: "Project Lead / Architect", span: "lg:col-span-2", img: "/team/co.png" },
+                { name: "Mẫn", role: "Frontend Dev", span: "lg:col-span-2", img: "/team/man.png" },
+                { name: "Toàn", role: "QA / Tester", span: "lg:col-span-3", img: "/team/toan.png" },
+                { name: "Kiệt", role: "QA / Tester", span: "lg:col-span-3", img: "/team/kiet.png" }
               ].map((member, i) => (
-                <div key={i} className={`group bg-white rounded-2xl p-6 border border-black/5 flex items-center gap-6 hover:border-mint-primary/30 hover:shadow-xl transition-all duration-300 ${member.span}`}>
-                  <div className="text-4xl bg-mint-primary/10 w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
-                    {member.emoji}
+                <div key={i} className={`group relative h-[320px] rounded-[2rem] overflow-hidden border border-black/5 hover:shadow-2xl transition-all duration-700 ${member.span}`}>
+                  {/* Full Size Member Image */}
+                  <img
+                    src={member.img}
+                    alt={member.name}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                  />
+
+                  {/* Gradient & Content Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8 text-white translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                    <div className="flex justify-between items-end">
+                      <div className="space-y-1">
+                        <h3 className="text-3xl font-black drop-shadow-lg">{member.name}</h3>
+                        <p className="text-mint-primary font-bold text-sm uppercase tracking-widest drop-shadow-lg opacity-90">{member.role}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <h3 className="text-2xl font-black text-[#2d3436] mb-1">{member.name}</h3>
-                    <p className="text-mint-darker font-bold text-sm uppercase tracking-widest">{member.role}</p>
+
+                  {/* Recognition Badge */}
+                  <div className="absolute top-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-tighter text-white border border-white/20">
+                      Food Rescue Team
+                    </span>
                   </div>
                 </div>
               ))}
