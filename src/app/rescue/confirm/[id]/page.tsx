@@ -120,7 +120,7 @@ export default async function RescueConfirmPage({ params }: ConfirmPageProps) {
                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Thông tin đối tác</h3>
                 <div className="flex items-center gap-6 p-6 rounded-2xl bg-white border border-slate-100 group hover:border-mint-primary transition-all">
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 shrink-0 flex items-center justify-center">
-                    <span className="text-xl font-black text-mint-primary">{post.donor.name[0]}</span>
+                    <span className="text-xl font-black text-mint-primary">{post.donor.name?.[0] || '?'}</span>
                   </div>
                   <div className="flex-grow space-y-1">
                     <div className="flex items-center gap-2">

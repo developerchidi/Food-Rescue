@@ -17,6 +17,8 @@ export async function rescueFood(
     return { error: "Bạn cần đăng nhập để thực hiện hành động này." };
   }
 
+  const userId = session.user.id;
+
   try {
     const result = await prisma.$transaction(async (tx) => {
       // 1. Kiểm tra bài đăng còn đủ số lượng không
@@ -36,13 +38,13 @@ export async function rescueFood(
       const donation = await tx.donation.create({
         data: {
           postId: post.id,
-          receiverId: session.user.id,
+          receiverId: userId,
           quantity: quantity,
           fulfillmentMethod: fulfillmentMethod,
           deliveryAddress: address,
           deliveryPhone: phone,
           status: "REQUESTED",
-          qrCode: `${fulfillmentMethod === "DELIVERY" ? "SHIP" : "REC"}-${post.id.slice(0, 4)}-${session.user.id.slice(0, 4)}-${Date.now().toString().slice(-6)}`,
+          qrCode: `${fulfillmentMethod === "DELIVERY" ? "SHIP" : "REC"}-${post.id.slice(0, 4)}-${userId.slice(0, 4)}-${Date.now().toString().slice(-6)}`,
         },
       });
 
