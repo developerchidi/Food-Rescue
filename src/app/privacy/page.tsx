@@ -6,14 +6,14 @@ export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-[#fdfcf8]">
       <Navbar />
-      
+
       <div className="pt-32 pb-24">
-        <div className="container mx-auto px-6 max-w-4xl">
+        <div className="container mx-auto px-6 max-w-8xl">
           {/* Hero Section */}
-          <div className="text-center mb-16">
-            <div className="w-20 h-20 bg-mint-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="text-center mb-6">
+            {/* <div className="w-20 h-20 bg-mint-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Shield className="w-10 h-10 text-mint-darker" />
-            </div>
+            </div> */}
             <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-[#2d3436]">
               Chính sách <span className="text-mint-darker">Bảo mật</span>
             </h1>
@@ -23,18 +23,18 @@ export default function PrivacyPage() {
           </div>
 
           {/* Introduction */}
-          <section className="mb-12">
+          <section className="mb-6">
             <div className="bg-white rounded-2xl p-8 border border-black/5">
               <p className="text-foreground/70 leading-relaxed">
-                Food Rescue cam kết bảo vệ quyền riêng tư và thông tin cá nhân của bạn. 
-                Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ 
+                Food Rescue cam kết bảo vệ quyền riêng tư và thông tin cá nhân của bạn.
+                Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ
                 thông tin của bạn khi sử dụng dịch vụ của chúng tôi.
               </p>
             </div>
           </section>
 
           {/* Privacy Sections */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             {[
               {
                 icon: Database,
@@ -119,13 +119,13 @@ export default function PrivacyPage() {
               }
             ].map((section, i) => (
               <section key={i} className="bg-white rounded-2xl p-8 border border-black/5">
-                <div className="flex items-start gap-4 mb-6">
+                <div className="flex items-center gap-4 mb-6">
                   <div className="w-12 h-12 bg-mint-primary/10 rounded-xl flex items-center justify-center shrink-0">
                     <section.icon className="w-6 h-6 text-mint-darker" />
                   </div>
                   <h2 className="text-2xl font-black text-[#2d3436]">{section.title}</h2>
                 </div>
-                <ul className="space-y-4 ml-16">
+                <ul className="space-y-4">
                   {section.content.map((item, j) => (
                     <li key={j} className="flex gap-3">
                       <span className="text-mint-darker font-black mt-1">•</span>
@@ -138,14 +138,14 @@ export default function PrivacyPage() {
           </div>
 
           {/* Contact Section */}
-          <section className="mt-12 bg-mint-primary/10 rounded-2xl p-8 border border-mint-primary/20">
+          <section className="mt-6 bg-mint-primary/10 rounded-2xl p-8 border border-mint-primary/20">
             <h3 className="text-xl font-black mb-4 text-[#2d3436]">Liên hệ về quyền riêng tư</h3>
             <p className="text-foreground/70 leading-relaxed mb-4">
               Nếu bạn có câu hỏi, yêu cầu hoặc khiếu nại về chính sách bảo mật này hoặc cách chúng tôi xử lý thông tin cá nhân của bạn, vui lòng liên hệ:
             </p>
             <div className="space-y-2 text-foreground/70">
-              <p><strong>Email:</strong> privacy@foodrescue.vn</p>
-              <p><strong>Điện thoại:</strong> 1900 123 456</p>
+              <p><strong>Email:</strong> nguyenchidi.dev@gmail.com</p>
+              <p><strong>Điện thoại:</strong> 0352641606</p>
               <p><strong>Địa chỉ:</strong> Tòa nhà Green Tech, Quận 1, TP. Hồ Chí Minh</p>
             </div>
             <div className="mt-6 p-4 bg-white/50 rounded-xl">
