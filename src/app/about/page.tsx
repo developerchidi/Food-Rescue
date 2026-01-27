@@ -133,20 +133,24 @@ export default function AboutPage() {
               <h2 className="text-4xl font-black mb-4 text-[#2d3436]">Đội ngũ sáng lập</h2>
               <p className="text-foreground/60 text-lg">Những con người tâm huyết đứng sau dự án.</p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
               {[
-                { name: "Chidi", role: "Project Lead / Architect", emoji: "⚡" },
-                { name: "Nghi", role: "Frontend Lead", emoji: "🎨" },
-                { name: "Kiên", role: "Backend Dev", emoji: "⚙️" },
-                { name: "Cơ", role: "Frontend Dev", emoji: "🚀" },
-                { name: "Mẫn", role: "Frontend Dev", emoji: "✨" },
-                { name: "Toàn", role: "QA / Tester", emoji: "🛡️" },
-                { name: "Kiệt", role: "QA / Tester", emoji: "🔍" }
+                { name: "Chidi", role: "Project Lead / Architect", emoji: "⚡", span: "lg:col-span-3" },
+                { name: "Nghi", role: "Frontend Lead", emoji: "🎨", span: "lg:col-span-3" },
+                { name: "Kiên", role: "Backend Dev", emoji: "⚙️", span: "lg:col-span-2" },
+                { name: "Cơ", role: "Frontend Dev", emoji: "🚀", span: "lg:col-span-2" },
+                { name: "Mẫn", role: "Frontend Dev", emoji: "✨", span: "lg:col-span-2" },
+                { name: "Toàn", role: "QA / Tester", emoji: "🛡️", span: "lg:col-span-3" },
+                { name: "Kiệt", role: "QA / Tester", emoji: "🔍", span: "lg:col-span-3" }
               ].map((member, i) => (
-                <div key={i} className="bg-white rounded-2xl p-8 border border-black/5 text-center hover:border-mint-primary/30 hover:shadow-lg transition-all">
-                  <div className="text-5xl mb-6">{member.emoji}</div>
-                  <h3 className="text-xl font-black text-[#2d3436] mb-2">{member.name}</h3>
-                  <p className="text-mint-darker font-bold text-sm uppercase tracking-wider">{member.role}</p>
+                <div key={i} className={`group bg-white rounded-2xl p-6 border border-black/5 flex items-center gap-6 hover:border-mint-primary/30 hover:shadow-xl transition-all duration-300 ${member.span}`}>
+                  <div className="text-4xl bg-mint-primary/10 w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                    {member.emoji}
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-2xl font-black text-[#2d3436] mb-1">{member.name}</h3>
+                    <p className="text-mint-darker font-bold text-sm uppercase tracking-widest">{member.role}</p>
+                  </div>
                 </div>
               ))}
             </div>
