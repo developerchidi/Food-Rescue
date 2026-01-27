@@ -102,7 +102,7 @@ export default function TermsPage() {
                 <ul className="space-y-4">
                   {section.content.map((item, j) => (
                     <li key={j} className="flex gap-3">
-                      <span className="text-mint-darker font-black mt-1">•</span>
+                      <span className="text-mint-darker font-black">•</span>
                       <span className="text-foreground/70 leading-relaxed">{item}</span>
                     </li>
                   ))}

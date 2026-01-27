@@ -128,7 +128,7 @@ export default function PrivacyPage() {
                 <ul className="space-y-4">
                   {section.content.map((item, j) => (
                     <li key={j} className="flex gap-3">
-                      <span className="text-mint-darker font-black mt-1">•</span>
+                      <span className="text-mint-darker font-black">•</span>
                       <span className="text-foreground/70 leading-relaxed">{item}</span>
                     </li>
                   ))}
@@ -145,7 +145,7 @@ export default function PrivacyPage() {
             </p>
             <div className="space-y-2 text-foreground/70">
               <p><strong>Email:</strong> nguyenchidi.dev@gmail.com</p>
-              <p><strong>Điện thoại:</strong> 0352641606</p>
+              <p><strong>Điện thoại:</strong> 0352 641 606</p>
               <p><strong>Địa chỉ:</strong> Tòa nhà Green Tech, Quận 1, TP. Hồ Chí Minh</p>
             </div>
             <div className="mt-6 p-4 bg-white/50 rounded-xl">

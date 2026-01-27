@@ -261,7 +261,7 @@ export default function ContactPage() {
             </section>
 
             {/* Contact Information */}
-            <section className="space-y-8">
+            <section className="space-y-6">
               <div className="bg-mint-darker rounded-2xl p-8 lg:p-10 text-white">
                 <h2 className="text-3xl font-black mb-6">Thông tin liên hệ</h2>
                 <div className="space-y-6">
@@ -314,7 +314,7 @@ export default function ContactPage() {
                     "Đội ngũ hỗ trợ chuyên nghiệp 24/7"
                   ].map((benefit, i) => (
                     <li key={i} className="flex gap-3">
-                      <span className="text-mint-darker font-black mt-1 shrink-0">✓</span>
+                      <span className="text-mint-darker font-black shrink-0">✓</span>
                       <span className="text-foreground/70 leading-relaxed">{benefit}</span>
                     </li>
                   ))}
