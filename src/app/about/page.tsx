@@ -42,11 +42,11 @@ export default function AboutPage() {
               </div>
               <div className="order-1 lg:order-2">
                 <div className="relative group">
-                  <div className="absolute -inset-4 bg-mint-primary/10 rounded-[2rem] blur-2xl group-hover:bg-mint-primary/20 transition-all duration-500"></div>
+                  <div className="absolute -inset-4 bg-mint-primary/10 rounded-[1.5rem] blur-2xl group-hover:bg-mint-primary/20 transition-all duration-500"></div>
                   <img
                     src="/logo-reflection.png"
                     alt="Food Rescue Logo"
-                    className="relative rounded-[2rem] shadow-2xl hover:scale-[1.02] transition-transform duration-500 pointer-events-none"
+                    className="relative rounded-[1.5rem] shadow-2xl hover:scale-[1.02] transition-transform duration-500 pointer-events-none"
                   />
                 </div>
               </div>
@@ -54,22 +54,26 @@ export default function AboutPage() {
           </section>
 
           {/* Mission & Vision Section */}
-          <section className="mb-32 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-[2rem] p-10 lg:p-12 border border-black/5 shadow-sm hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 bg-mint-primary/10 rounded-2xl flex items-center justify-center mb-8">
-                <Target className="w-8 h-8 text-mint-darker" />
+          <section className="mb-32 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-[1.5rem] p-6 lg:p-8 border border-black/5 shadow-sm hover:shadow-xl transition-all duration-300 group">
+              <div className="flex items-center gap-6 mb-8">
+                <div className="w-16 h-16 bg-mint-primary/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                  <Target className="w-8 h-8 text-mint-darker" />
+                </div>
+                <h2 className="text-3xl font-black text-[#2d3436]">Sứ mệnh</h2>
               </div>
-              <h2 className="text-3xl font-black mb-6 text-[#2d3436]">Sứ mệnh</h2>
               <p className="text-lg text-foreground/70 leading-relaxed">
                 Tận dụng sức mạnh công nghệ để kết nối các nguồn lực thực phẩm dư thừa, giảm thiểu tối đa lãng phí
                 và cung cấp những bữa ăn giá trị, bổ dưỡng cho mọi tầng lớp trong xã hội.
               </p>
             </div>
-            <div className="bg-mint-darker rounded-[2rem] p-10 lg:p-12 text-white shadow-lg hover:shadow-2xl transition-shadow">
-              <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-8">
-                <Leaf className="w-8 h-8 text-white" />
+            <div className="bg-mint-darker rounded-[1.5rem] p-6 lg:p-8 text-white shadow-lg hover:shadow-2xl transition-all duration-300 group">
+              <div className="flex items-center gap-6 mb-8">
+                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                  <Leaf className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-3xl font-black">Tầm nhìn</h2>
               </div>
-              <h2 className="text-3xl font-black mb-6">Tầm nhìn</h2>
               <p className="text-lg text-white/80 leading-relaxed">
                 Trở thành hệ sinh thái giải cứu thực phẩm hàng đầu Đông Nam Á, nơi mọi thực phẩm dư thừa
                 đều được trân trọng và chuyển hóa thành giá trị thiết thực cho cộng đồng và môi trường.
@@ -79,11 +83,11 @@ export default function AboutPage() {
 
           {/* Values Section */}
           <section className="mb-32">
-            <div className="text-center mb-16">
+            <div className="text-center mb-6">
               <h2 className="text-4xl font-black mb-4 text-[#2d3436]">Giá trị cốt lõi</h2>
               <p className="text-foreground/60 text-lg">Những nguyên tắc dẫn dắt mọi hành động của chúng tôi.</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 {
                   icon: Heart,
@@ -128,7 +132,7 @@ export default function AboutPage() {
           </section>
 
           {/* Team Section */}
-          <section className="mb-32">
+          <section className="mb-6">
             <div className="text-center mb-6">
               <h2 className="text-4xl font-black mb-4 text-[#2d3436]">Đội ngũ sáng lập</h2>
               <p className="text-foreground/60 text-lg">Những con người tâm huyết đứng sau dự án.</p>
@@ -143,7 +147,7 @@ export default function AboutPage() {
                 { name: "Toàn", role: "QA / Tester", span: "lg:col-span-3", img: "/team/toan.png" },
                 { name: "Kiệt", role: "QA / Tester", span: "lg:col-span-3", img: "/team/kiet.png" }
               ].map((member, i) => (
-                <div key={i} className={`group relative h-[320px] rounded-[2rem] overflow-hidden border border-black/5 hover:shadow-2xl transition-all duration-700 ${member.span}`}>
+                <div key={i} className={`group relative h-[320px] rounded-[1.5rem] overflow-hidden border border-black/5 hover:shadow-2xl transition-all duration-700 ${member.span}`}>
                   {/* Full Size Member Image */}
                   <img
                     src={member.img}
@@ -174,7 +178,7 @@ export default function AboutPage() {
 
           {/* Impact Stats */}
           <section className="mb-32">
-            <div className="bg-mint-darker rounded-[2rem] p-12 lg:p-20 text-white relative overflow-hidden">
+            <div className="bg-mint-darker rounded-[1.5rem] p-12 lg:p-20 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
               <div className="absolute bottom-0 left-0 w-96 h-96 bg-mint-primary/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
 
@@ -195,9 +199,9 @@ export default function AboutPage() {
           </section>
 
           {/* Final CTA Section */}
-          <section className="text-center pb-12">
-            <h2 className="text-4xl md:text-5xl font-black mb-8 text-[#2d3436]">Sẵn sàng đồng hành cùng chúng tôi?</h2>
-            <p className="text-xl text-foreground/60 max-w-2xl mx-auto mb-12">
+          <section className="text-center pb-6">
+            <h2 className="text-4xl md:text-5xl font-black mb-6 text-[#2d3436]">Sẵn sàng đồng hành cùng chúng tôi?</h2>
+            <p className="text-xl text-foreground/60 max-w-2xl mx-auto mb-6">
               Dù bạn là doanh nghiệp muốn đóng góp hay người dùng muốn trải nghiệm,
               luôn có chỗ cho bạn trong hành trình giải cứu thực phẩm.
             </p>
