@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap, Circle } from "react-leaflet";

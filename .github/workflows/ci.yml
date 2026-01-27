@@ -1,0 +1,47 @@
+name: CI/CD Pipeline
+
+# 1. Kích hoạt (Triggers)
+# Pipeline sẽ chạy tự động khi có code mới được Push hoặc tạo Pull Request
+# vào 2 nhánh chính là "main" và "develop"
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    # 2. Môi trường chạy (Runner)
+    # GitHub sẽ cấp một máy ảo Ubuntu mới tinh để chạy test
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Bước 1: Tải code từ kho chứa về máy ảo
+    - uses: actions/checkout@v4
+    
+    # Bước 2: Cài đặt Node.js phiên bản 20
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm' # Giúp cài thư viện nhanh hơn ở lần sau
+        
+    # Bước 3: Cài đặt các thư viện (node_modules)
+    # 'npm ci' giống 'npm install' nhưng chặt chẽ và an toàn hơn cho CI
+    - name: Install dependencies
+      run: npm ci
+      
+    # Bước 4: Kiểm tra lỗi cú pháp (Linting)
+    # Nếu code viết ẩu, step này sẽ fail
+    - name: Linting Code
+      run: npm run lint
+      
+    # Bước 5: Kiểm tra lỗi Logic (Type Checking)
+    # TypeScript sẽ soi các lỗi sai kiểu dữ liệu
+    - name: Type Checking
+      run: npx tsc --noEmit
+      
+    # Bước 6: Thử Build dự án (Next.js Build)
+    # Đảm bảo code có thể build ra bản production thành công
+    - name: Build Project
+      run: npm run build
