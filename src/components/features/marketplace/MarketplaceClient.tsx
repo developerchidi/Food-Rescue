@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { Search, Map as MapIcon, List, Filter, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, Navigation } from "lucide-react";
 import FoodCard from "../FoodCard";
+import FoodCardSkeleton from "./FoodCardSkeleton";
 import dynamic from "next/dynamic";
 import { calculateDistance, getUserLocation, formatDistance } from "@/lib/geolocation";
 
@@ -31,7 +32,25 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // in km
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const ITEMS_PER_PAGE = 8;
+
+  // Simulate initial loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Simulate loading when filters change
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [searchQuery, activeCategory, distanceFilter]);
 
   const filteredPosts = initialData.filter((post) => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -234,21 +253,27 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
                 </div>
               ) : (
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,320px))] justify-center gap-6">
-                  {paginatedPosts.map((post) => (
-                    <FoodCard
-                      key={post.id}
-                      id={post.id}
-                      title={post.title}
-                      description={post.description}
-                      imageUrl={post.imageUrl}
-                      originalPrice={post.originalPrice}
-                      rescuePrice={post.rescuePrice}
-                      quantity={post.quantity || 0}
-                      expiryDate={post.expiryDate}
-                      donorName={post.donor?.name || "Người quyên góp"}
-                      type={post.type}
-                    />
-                  ))}
+                  {isLoading ? (
+                    Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                      <FoodCardSkeleton key={i} />
+                    ))
+                  ) : (
+                    paginatedPosts.map((post) => (
+                      <FoodCard
+                        key={post.id}
+                        id={post.id}
+                        title={post.title}
+                        description={post.description}
+                        imageUrl={post.imageUrl}
+                        originalPrice={post.originalPrice}
+                        rescuePrice={post.rescuePrice}
+                        quantity={post.quantity || 0}
+                        expiryDate={post.expiryDate}
+                        donorName={post.donor?.name || "Người quyên góp"}
+                        type={post.type}
+                      />
+                    ))
+                  )}
                 </div>
               )}
 
@@ -300,7 +325,7 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
         </div>
       </div>
 
-    </div>
+    </div >
   );
 }
 
