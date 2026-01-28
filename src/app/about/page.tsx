@@ -11,7 +11,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-6">
           {/* Hero Section */}
           <div className="text-center mb-24">
-            <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 text-[#2d3436]">
+            <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-8 text-[#2d3436]">
               Về <span className="text-mint-darker">Food Rescue</span>
             </h1>
             <p className="text-xl md:text-2xl text-foreground/70 max-w-3xl mx-auto leading-relaxed font-medium">

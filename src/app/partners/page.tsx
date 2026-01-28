@@ -11,7 +11,7 @@ export default function PartnersPage() {
         <div className="container mx-auto px-6">
           {/* Hero Section */}
           <div className="text-center mb-20">
-            <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-6 text-[#2d3436]">
+            <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-[#2d3436]">
               Đối tác & <span className="text-mint-darker">Merchant</span>
             </h1>
             <p className="text-xl text-foreground/70 max-w-3xl mx-auto leading-relaxed">

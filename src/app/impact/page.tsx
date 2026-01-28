@@ -12,7 +12,7 @@ export default function ImpactPage() {
           {/* Hero Section */}
           <div className="text-center mb-24 relative">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-mint-primary/5 rounded-full blur-[100px] -z-10"></div>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 text-[#2d3436]">
+            <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-8 text-[#2d3436]">
               Tác động <span className="text-mint-darker">Cộng đồng</span>
             </h1>
             <p className="text-xl md:text-xl text-foreground/70 max-w-3xl mx-auto leading-relaxed font-medium">
