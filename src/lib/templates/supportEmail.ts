@@ -28,157 +28,164 @@ Trân trọng,
 
   const html = `
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Support Request</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
   <style>
-    body {
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f6f8;
+    /* Reset */
+    body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fdfcf8; }
+    
+    /* Font Stack */
+    body, td, th {
+      font-family: 'Be Vietnam Pro', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
-    .email-container {
-      max-width: 600px;
-      margin: 40px auto;
-      background-color: #ffffff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+
+    /* Layout */
+    .wrapper { width: 100%; background-color: #fdfcf8; padding: 40px 0; }
+    .container { 
+      max-width: 600px; 
+      margin: 0 auto; 
+      background-color: #ffffff; 
+      border-radius: 20px; 
+      box-shadow: 0 5px 25px rgba(0,0,0,0.03); 
+      overflow: hidden; 
+      border: 1px solid #f1f2f6;
     }
-    .header {
-      background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
-      padding: 35px 30px;
-      text-align: center;
+
+    /* Header */
+    .header { text-align: center; padding: 40px 0 20px 0; }
+    
+    .logo-text { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+    .text-food { color: #81A49C; }
+    .text-rescue { color: #A8E6CF; }
+
+    .header-title { 
+      color: #009975; 
+      font-size: 24px; 
+      font-weight: 900; 
+      margin-top: 15px; 
+      margin-bottom: 5px;
+      letter-spacing: -0.8px;
     }
-    .header h1 {
-      color: #ffffff;
-      margin: 0;
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
+    
+    /* Content */
+    .content { padding: 20px 40px 40px 40px; }
+    
+    /* Info Card Styles */
+    .info-group { margin-bottom: 25px; }
+    .label { 
+      font-size: 11px; 
+      color: #636e72; 
+      text-transform: uppercase; 
+      font-weight: 600; 
+      letter-spacing: 0.8px; 
+      margin-bottom: 8px; 
+      display: block; 
     }
-    .content {
-      padding: 40px 35px;
+    .value { 
+      font-size: 16px; 
+      color: #2d3436; 
+      font-weight: 500; 
+      line-height: 1.5; 
     }
-    .info-group {
-      margin-bottom: 25px;
-    }
-    .label {
-      color: #b2bec3;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-      display: block;
-    }
-    .value {
-      color: #2d3436;
-      font-size: 16px;
-      font-weight: 500;
-    }
+
+    /* Message Box */
     .message-card {
-      background-color: #f8fbfb;
-      border: 1px solid #e1e8ed;
-      border-radius: 8px;
-      padding: 25px;
-      margin-top: 10px;
+      background-color: #f8f9fa;
+      padding: 24px;
+      margin-top: 16px;
+      border-radius: 12px;
+      border: 1px dashed #00b89430;
     }
     .message-content {
       color: #2d3436;
       font-size: 15px;
+      line-height: 1.7;
       white-space: pre-wrap;
-      margin: 0;
+      font-style: italic;
     }
-    .cta-button {
-      display: inline-block;
+
+    /* Button */
+    .btn-wrap { text-align: center; margin-top: 35px; }
+    .btn {
       background-color: #00b894;
       color: #ffffff !important;
       text-decoration: none;
-      padding: 12px 30px;
-      border-radius: 50px;
-      font-weight: 600;
-      font-size: 14px;
-      margin-top: 30px;
-      text-align: center;
-      transition: background-color 0.2s;
+      padding: 16px 40px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 15px;
+      display: inline-block;
+      box-shadow: 0 4px 12px rgba(0, 184, 148, 0.2);
     }
-    .cta-button:hover {
-      background-color: #01a282;
+    
+    /* Footer */
+    .footer { 
+      background-color: #fdfcf8; 
+      padding: 30px; 
+      text-align: center; 
+      border-top: 1px solid #dfe6e9; 
     }
-    .footer {
-      background-color: #2d3436;
-      padding: 25px;
-      text-align: center;
-    }
-    .footer p {
-      color: #636e72;
-      font-size: 12px;
-      margin: 5px 0;
-    }
-    .footer-links a {
-      color: #00b894;
-      text-decoration: none;
-      font-size: 12px;
-      margin: 0 8px;
-    }
+    .footer-text { font-size: 12px; color: #b2bec3; font-weight: 500; letter-spacing: 0.5px; }
   </style>
 </head>
 <body>
-  <div class="email-container">
-    <div class="header">
-      <h1>Food Rescue</h1>
-    </div>
-    
-    <div class="content">
-      <div style="text-align: center; margin-bottom: 35px;">
-        <h2 style="color: #2d3436; font-size: 22px; margin: 0 0 10px 0;">Yêu cầu hỗ trợ mới</h2>
-        <p style="color: #636e72; margin: 0;">Hệ thống vừa nhận được tin nhắn từ người dùng.</p>
+  <div class="wrapper">
+    <div class="container">
+      
+      <div class="header">
+        <div class="logo-text">
+          <span class="text-food">Food</span><span class="text-rescue">Rescue</span>
+        </div>
+        <div class="header-title">Yêu Cầu Hỗ Trợ</div>
       </div>
 
-      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 200px;">
-          <div class="info-group">
-            <span class="label">Người gửi</span>
-            <div class="value">${name}</div>
+      <div class="content">
+        <div style="margin-bottom: 30px; text-align: center;">
+          <p style="color: #636e72; margin: 0; font-size: 14px;">Hệ thống vừa nhận được thông báo hỗ trợ từ người dùng mới.</p>
+        </div>
+
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td width="50%" valign="top" style="padding-bottom: 25px;">
+              <span class="label">Người gửi</span>
+              <span class="value" style="font-weight: 700;">${name}</span>
+            </td>
+            <td width="50%" valign="top" style="padding-bottom: 25px;">
+              <span class="label">Thời gian</span>
+              <span class="value" style="font-size: 14px;">${new Date().toLocaleString('vi-VN')}</span>
+            </td>
+          </tr>
+        </table>
+
+        <div class="info-group">
+          <span class="label">Địa chỉ Email</span>
+          <a href="mailto:${email}" class="value" style="color: #00b894; text-decoration: none; font-weight: 600;">${email}</a>
+        </div>
+
+        <div class="info-group">
+          <span class="label">Nội dung yêu cầu</span>
+          <div class="message-card">
+            <div class="message-content">${message}</div>
           </div>
         </div>
-        <div style="flex: 1; min-width: 200px;">
-          <div class="info-group">
-            <span class="label">Email liên hệ</span>
-            <div class="value">
-              <a href="mailto:${email}" style="color: #00b894; text-decoration: none;">${email}</a>
-            </div>
-          </div>
+
+        <div class="btn-wrap">
+          <a href="mailto:${email}?subject=${encodeURIComponent(`Re: [Food Rescue] Phản hồi yêu cầu hỗ trợ`)}" class="btn">
+            Gửi Phản Hồi
+          </a>
         </div>
       </div>
 
-      <div class="info-group" style="margin-top: 10px;">
-        <span class="label">Nội dung tin nhắn</span>
-        <div class="message-card">
-          <p class="message-content">${message}</p>
-        </div>
+      <div class="footer">
+        <div class="footer-text">© ${new Date().getFullYear()} FOOD RESCUE VIETNAM • SYSTEM ADMIN</div>
       </div>
-
-      <div style="text-align: center;">
-        <a href="mailto:${email}?subject=${encodeURIComponent(`Re: [Food Rescue] Phản hồi yêu cầu hỗ trợ`)}&body=${encodeURIComponent(`Chào ${name},\n\nCảm ơn bạn đã liên hệ với Food Rescue.\n\n[Nhập nội dung phản hồi của bạn tại đây]\n\nTrân trọng,\nĐội ngũ Food Rescue`)}" class="cta-button">Phản hồi ngay</a>
-      </div>
-    </div>
-
-    <div class="footer">
-      <p style="color: #b2bec3;">Email này được gửi tự động từ hệ thống Food Rescue.</p>
-      <div class="footer-links" style="margin-top: 15px;">
-        <a href="#">Trang chủ</a> &bull; 
-        <a href="#">Bảo mật</a> &bull; 
-        <a href="#">Điều khoản</a>
-      </div>
-      <p style="color: #636e72; margin-top: 15px;">&copy; ${new Date().getFullYear()} Food Rescue Vietnam. All rights reserved.</p>
     </div>
   </div>
 </body>
