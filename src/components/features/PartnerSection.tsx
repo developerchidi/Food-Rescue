@@ -4,7 +4,7 @@ export default function PartnerSection() {
   return (
     <section id="partners" className="py-24 bg-white overflow-hidden">
       <div className="container mx-auto px-6">
-        <div className="bg-mint-darker rounded-[4rem] p-8 lg:p-12 text-white relative overflow-hidden">
+        <div className="bg-mint-darker rounded-[3rem] p-8 lg:p-12 text-white relative overflow-hidden">
           {/* Background Decor */}
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white opacity-5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
 
@@ -48,11 +48,29 @@ export default function PartnerSection() {
                   <p className="text-lg text-white/60 mb-12 uppercase tracking-[0.2em] font-bold">Thương hiệu tin tưởng</p>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-8 opacity-40 grayscale group-hover:grayscale-0 transition-all">
-                  {/* Placeholder for Logos */}
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="w-20 h-12 bg-white rounded-lg flex items-center justify-center font-bold text-mint-darker text-xs">LOGO</div>
-                  ))}
+                <div className="flex flex-col items-center gap-6">
+                  <div className="flex flex-wrap justify-center gap-16">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="w-30 h-18 bg-white/10 rounded-lg overflow-hidden border border-white/5 hover:opacity-100 transition-all duration-500">
+                        <img
+                          src={`/partners/logo-${i}.png`}
+                          alt={`Partner Logo ${i}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-16">
+                    {[4, 5, 6].map((i) => (
+                      <div key={i} className="w-30 h-18 bg-white/10 rounded-lg overflow-hidden border border-white/5 hover:opacity-100 transition-all duration-500">
+                        <img
+                          src={`/partners/logo-${i}.png`}
+                          alt={`Partner Logo ${i}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
