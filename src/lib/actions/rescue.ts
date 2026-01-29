@@ -3,6 +3,8 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { ZodError } from "zod";
+import { RescueSchema } from "@/lib/validators/donations";
 
 export async function rescueFood(
   postId: string,
@@ -11,6 +13,30 @@ export async function rescueFood(
   address?: string,
   phone?: string
 ) {
+  try {
+    const parsed = RescueSchema.parse({
+      postId,
+      quantity,
+      fulfillmentMethod,
+      address,
+      phone,
+    });
+
+    postId = parsed.postId;
+    quantity = parsed.quantity;
+    fulfillmentMethod = parsed.fulfillmentMethod;
+    address = parsed.address;
+    phone = parsed.phone;
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return {
+        error: "Dữ liệu không hợp lệ.",
+        issues: error.issues,
+      };
+    }
+    throw error;
+  }
+
   const session = await auth();
 
   if (!session?.user?.id) {
