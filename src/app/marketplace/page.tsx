@@ -3,6 +3,8 @@ import MarketplaceClient from "@/components/features/marketplace/MarketplaceClie
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
+export const dynamic = "force-dynamic";
+
 export default async function MarketplacePage() {
   // Fetch real data from Supabase
   const foodPosts = await prisma.foodPost.findMany({

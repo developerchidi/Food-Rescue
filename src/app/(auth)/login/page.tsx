@@ -3,12 +3,12 @@
 import AuthLayout from "@/components/features/auth/AuthLayout";
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
@@ -47,7 +47,7 @@ export default function LoginPage() {
   };
 
   return (
-    <AuthLayout>
+    <>
       <div className="mb-10">
         <h1 className="text-4xl font-black text-[#2d3436] mb-3">Chào mừng trở lại!</h1>
         <p className="text-foreground/50 font-medium">Hãy đăng nhập để tiếp tục hành trình giải cứu của bạn.</p>
@@ -139,6 +139,16 @@ export default function LoginPage() {
           Đăng ký ngay
         </Link>
       </p>
+    </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <AuthLayout>
+      <Suspense fallback={<div className="p-8 text-center text-gray-500">Đang tải...</div>}>
+        <LoginForm />
+      </Suspense>
     </AuthLayout>
   );
 }

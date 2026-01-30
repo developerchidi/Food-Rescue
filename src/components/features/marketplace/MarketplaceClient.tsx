@@ -1,9 +1,12 @@
+/* eslint-disable */
 "use client";
 
-import { useState } from "react";
-import { Search, Map as MapIcon, List, Filter, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Map as MapIcon, List, Filter, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, Navigation } from "lucide-react";
 import FoodCard from "../FoodCard";
+import FoodCardSkeleton from "./FoodCardSkeleton";
 import dynamic from "next/dynamic";
+import { calculateDistance, getUserLocation, formatDistance } from "@/lib/geolocation";
 
 interface MarketplaceClientProps {
   initialData: any[];
@@ -26,24 +29,64 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // in km
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const ITEMS_PER_PAGE = 8;
+
+  // Simulate initial loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Simulate loading when filters change
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [searchQuery, activeCategory, distanceFilter]);
 
   const filteredPosts = initialData.filter((post) => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.donor.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === "all" || post.type === activeCategory;
-    return matchesSearch && matchesCategory;
+
+    // Distance filter
+    let matchesDistance = true;
+    if (distanceFilter && userLocation && post.donor.latitude && post.donor.longitude) {
+      const distance = calculateDistance(
+        userLocation.lat,
+        userLocation.lng,
+        post.donor.latitude,
+        post.donor.longitude
+      );
+      matchesDistance = distance <= distanceFilter;
+    }
+
+    return matchesSearch && matchesCategory && matchesDistance;
   });
 
-  // Reset to page 1 when filters change
-  const handleSearchChange = (val: string) => {
-    setSearchQuery(val);
+  // Reset to page 1 when view mode changes or filters change significantly
+  useEffect(() => {
     setCurrentPage(1);
-  };
+  }, [viewMode, searchQuery, activeCategory, distanceFilter]);
 
-  const handleCategoryChange = (val: string) => {
-    setActiveCategory(val);
-    setCurrentPage(1);
+  const handleGetLocation = async () => {
+    setIsGettingLocation(true);
+    try {
+      const location = await getUserLocation();
+      setUserLocation(location);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Không thể lấy vị trí');
+    } finally {
+      setIsGettingLocation(false);
+    }
   };
 
   const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
@@ -62,7 +105,7 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
             type="text"
             placeholder="Tìm món ăn, nhà hàng hoặc khu vực..."
             value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-16 pl-14 pr-6 bg-white border border-black/5 rounded-[2rem] focus:outline-none focus:ring-4 focus:ring-mint-primary/5 focus:border-mint-primary/30 transition-all font-medium text-lg shadow-sm"
           />
         </div>
@@ -110,18 +153,68 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
               <FilterChip
                 label="Tất cả bữa ăn"
                 active={activeCategory === "all"}
-                onClick={() => handleCategoryChange("all")}
+                onClick={() => setActiveCategory("all")}
               />
               <FilterChip
                 label="Mystery Boxes"
                 active={activeCategory === "MYSTERY_BOX"}
-                onClick={() => handleCategoryChange("MYSTERY_BOX")}
+                onClick={() => setActiveCategory("MYSTERY_BOX")}
               />
               <FilterChip
                 label="Món đơn lẻ"
                 active={activeCategory === "INDIVIDUAL"}
-                onClick={() => handleCategoryChange("INDIVIDUAL")}
+                onClick={() => setActiveCategory("INDIVIDUAL")}
               />
+            </div>
+
+            {/* Distance Filter */}
+            <div className="space-y-3 pt-6 border-t border-black/5">
+              <div className="font-bold text-sm text-foreground/40 uppercase tracking-widest mb-4 px-1 flex items-center justify-between">
+                Khoảng cách
+                {!userLocation && (
+                  <button
+                    onClick={handleGetLocation}
+                    disabled={isGettingLocation}
+                    className="text-xs font-black text-mint-darker hover:text-mint-dark transition-colors flex items-center gap-1 normal-case tracking-normal"
+                  >
+                    <Navigation size={12} className={isGettingLocation ? 'geolocation-loading' : ''} />
+                    {isGettingLocation ? 'Đang lấy...' : 'Vị trí của tôi'}
+                  </button>
+                )}
+              </div>
+              {userLocation ? (
+                <>
+                  <FilterChip
+                    label="Tất cả"
+                    active={distanceFilter === null}
+                    onClick={() => setDistanceFilter(null)}
+                  />
+                  <FilterChip
+                    label="Trong 1km"
+                    active={distanceFilter === 1}
+                    onClick={() => setDistanceFilter(1)}
+                  />
+                  <FilterChip
+                    label="Trong 3km"
+                    active={distanceFilter === 3}
+                    onClick={() => setDistanceFilter(3)}
+                  />
+                  <FilterChip
+                    label="Trong 5km"
+                    active={distanceFilter === 5}
+                    onClick={() => setDistanceFilter(5)}
+                  />
+                  <FilterChip
+                    label="Trong 10km"
+                    active={distanceFilter === 10}
+                    onClick={() => setDistanceFilter(10)}
+                  />
+                </>
+              ) : (
+                <p className="text-xs text-foreground/40 italic px-1">
+                  Cho phép truy cập vị trí để lọc theo khoảng cách
+                </p>
+              )}
             </div>
           </div>
 
@@ -159,22 +252,28 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {paginatedPosts.map((post) => (
-                    <FoodCard
-                      key={post.id}
-                      id={post.id}
-                      title={post.title}
-                      description={post.description}
-                      imageUrl={post.imageUrl}
-                      originalPrice={post.originalPrice}
-                      rescuePrice={post.rescuePrice}
-                      quantity={post.quantity || 0}
-                      expiryDate={post.expiryDate}
-                      donorName={post.donor?.name || "Người quyên góp"}
-                      type={post.type}
-                    />
-                  ))}
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,320px))] justify-center gap-6">
+                  {isLoading ? (
+                    Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                      <FoodCardSkeleton key={i} />
+                    ))
+                  ) : (
+                    paginatedPosts.map((post) => (
+                      <FoodCard
+                        key={post.id}
+                        id={post.id}
+                        title={post.title}
+                        description={post.description}
+                        imageUrl={post.imageUrl}
+                        originalPrice={post.originalPrice}
+                        rescuePrice={post.rescuePrice}
+                        quantity={post.quantity || 0}
+                        expiryDate={post.expiryDate}
+                        donorName={post.donor?.name || "Người quyên góp"}
+                        type={post.type}
+                      />
+                    ))
+                  )}
                 </div>
               )}
 
@@ -215,12 +314,18 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
               )}
             </>
           ) : (
-            <MapView posts={filteredPosts} />
+            <MapView
+              posts={filteredPosts}
+              userLocation={userLocation}
+              distanceFilter={distanceFilter}
+              onLocationRequest={handleGetLocation}
+              isGettingLocation={isGettingLocation}
+            />
           )}
         </div>
       </div>
 
-    </div>
+    </div >
   );
 }
 
