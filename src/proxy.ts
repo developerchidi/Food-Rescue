@@ -11,7 +11,7 @@ import {
 import { ratelimit } from "@/lib/ratelimit"
 import { NextResponse } from "next/server"
 
-export default auth(async (req) => {
+const proxyHandler = auth(async (req) => {
   const { nextUrl } = req
   const isLoggedIn = !!req.auth
   const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1"
@@ -69,6 +69,9 @@ export default auth(async (req) => {
 
   return response
 })
+
+export default proxyHandler
+export const proxy = proxyHandler
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
