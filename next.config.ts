@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
   },
   output: "standalone",
   experimental: {
+    // @ts-ignore
     turbo: {
       root: ".",
     },
