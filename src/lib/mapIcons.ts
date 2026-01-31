@@ -1,4 +1,4 @@
-import L from 'leaflet';
+import * as L from 'leaflet';
 
 // Helper function to create custom div icon
 const createCustomIcon = (html: string, className: string) => {
