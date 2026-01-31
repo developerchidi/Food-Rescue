@@ -11,7 +11,7 @@ import {
 import { ratelimit } from "@/lib/ratelimit"
 import { NextResponse } from "next/server"
 
-const proxyHandler = auth(async (req) => {
+const proxyHandler = auth(async (req: any) => {
   const { nextUrl } = req
   const isLoggedIn = !!req.auth
   const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1"
@@ -37,7 +37,7 @@ const proxyHandler = auth(async (req) => {
 
   if (limitResult.headers) {
     Object.entries(limitResult.headers).forEach(([key, value]) => {
-      response.headers.set(key, value)
+      response.headers.set(key, value as string)
     })
   }
 
