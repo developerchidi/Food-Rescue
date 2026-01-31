@@ -1,5 +1,5 @@
 /**
- * Danh sach cac route cong khai khong cam dang nhap
+ * Danh sach cac route cong khai khong can dang nhap
  */
 export const publicRoutes = [
   "/",
@@ -32,6 +32,16 @@ export const apiAuthPrefix = "/api/auth";
  * Redirect mac dinh sau khi dang nhap
  */
 export const DEFAULT_LOGIN_REDIRECT = "/";
+
+/**
+ * Prefix cho cac route chi danh cho Admin
+ */
+export const adminRoutesPrefix = "/admin";
+
+/**
+ * Prefix cho cac route chi danh cho Merchant (Donor)
+ */
+export const merchantRoutesPrefix = "/merchant";
 
 /**
  * Danh sach cac API endpoint can ap dung Rate Limiting

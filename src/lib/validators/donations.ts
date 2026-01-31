@@ -8,7 +8,7 @@ export const RescueSchema = z
     postId: IdSchema,
     quantity: z
       .number({
-        invalid_type_error: "Số lượng phải là một số.",
+        message: "Số lượng phải là một số.",
       })
       .int("Số lượng phải là số nguyên.")
       .min(1, {

@@ -29,7 +29,7 @@ jobs:
     # Bước 3: Cài đặt các thư viện (node_modules)
     # 'npm ci' giống 'npm install' nhưng chặt chẽ và an toàn hơn cho CI
     - name: Install dependencies
-      run: npm ci
+      run: npm install --legacy-peer-deps
       
     # Bước 4: Kiểm tra lỗi cú pháp (Linting)
     # Nếu code viết ẩu, step này sẽ fail
