@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
   },
   output: "standalone",
   experimental: {
-    // @ts-ignore
+    // @ts-expect-error: Turbo type is missing in NextConfig
     turbo: {
       root: ".",
     },
