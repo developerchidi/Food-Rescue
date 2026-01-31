@@ -30,12 +30,6 @@ const nextConfig: NextConfig = {
     ],
   },
   output: "standalone",
-  experimental: {
-    // @ts-expect-error: Turbo type is missing in NextConfig
-    turbo: {
-      root: ".",
-    },
-  },
 };
 
 export default nextConfig;
