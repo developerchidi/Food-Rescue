@@ -27,9 +27,8 @@ export default auth(async (req) => {
 
   let response = NextResponse.next()
 
-  // 1. Ap dung Rate Limiting chuyen nghiep (Multi-layer & Priority-aware)
+  // 1. Ap dung Rate Limiting
   const isSensitive = isRatelimitRoute || isApiAuthRoute
-
   const limitResult = await ratelimit(ip, nextUrl.pathname, userRole, isSensitive)
 
   if (!limitResult.success && limitResult.response) {
@@ -42,7 +41,7 @@ export default auth(async (req) => {
     })
   }
 
-  // 2. Xu ly logic chuyen huong (Authentication & Authorization)
+  // 2. Xu ly logic chuyen huong
   if (isApiAuthRoute) {
     return response
   }
