@@ -273,15 +273,16 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
           )}
 
           {userLocation && distanceFilter && (
-            // @ts-ignore
             <Circle
+              // @ts-expect-error - React Leaflet v5 type mismatch
               center={[userLocation.lat, userLocation.lng]}
               radius={distanceFilter * 1000}
               pathOptions={{
                 fillColor: '#52b788',
-                fillOpacity: 0.1,
+                fillOpacity: 0.15,
                 color: '#52b788',
                 weight: 2,
+                opacity: 0.6,
                 dashArray: '5, 10'
               }}
             />
