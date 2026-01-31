@@ -1,7 +1,7 @@
 /* eslint-disable */
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap, Circle } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap, Circle, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
 import { useEffect, useState, useMemo } from "react";
@@ -87,6 +87,8 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
   const [mounted, setMounted] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<any[] | null>(null);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
+  const [routeCoordinates, setRouteCoordinates] = useState<[number, number][] | null>(null);
+  const [isLoadingRoute, setIsLoadingRoute] = useState(false);
 
   const groupedPosts = useMemo(() => {
     const groups: { [key: string]: any[] } = {};
@@ -196,15 +198,45 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
                 {selectedPost.quantity === 0 ? "Đã hết" : "Giải cứu ngay"}
               </button>
 
-              <a
-                href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPost.donor.latitude},${selectedPost.donor.longitude}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full h-14 bg-white border-2 border-mint-primary/30 text-mint-darker font-bold rounded-2xl hover:bg-mint-primary/5 transition-all flex items-center justify-center gap-3"
+              <button
+                onClick={async () => {
+                  // Nếu đã có route, xóa đi
+                  if (routeCoordinates) {
+                    setRouteCoordinates(null);
+                    return;
+                  }
+
+                  if (!userLocation || !selectedPost.donor?.latitude || !selectedPost.donor?.longitude) {
+                    alert('Không thể tìm đường. Vui lòng bật vị trí của bạn.');
+                    return;
+                  }
+
+                  setIsLoadingRoute(true);
+                  try {
+                    const response = await fetch(
+                      `https://router.project-osrm.org/route/v1/driving/${userLocation.lng},${userLocation.lat};${selectedPost.donor.longitude},${selectedPost.donor.latitude}?overview=full&geometries=geojson`
+                    );
+                    const data = await response.json();
+
+                    if (data.routes && data.routes[0]) {
+                      const coords = data.routes[0].geometry.coordinates.map(
+                        (coord: [number, number]) => [coord[1], coord[0]] as [number, number]
+                      );
+                      setRouteCoordinates(coords);
+                    }
+                  } catch (error) {
+                    console.error('Lỗi khi tìm đường:', error);
+                    alert('Không thể tìm đường. Vui lòng thử lại.');
+                  } finally {
+                    setIsLoadingRoute(false);
+                  }
+                }}
+                disabled={isLoadingRoute || !userLocation}
+                className="w-full h-14 bg-white border-2 border-mint-primary/30 text-mint-darker font-bold rounded-2xl hover:bg-mint-primary/5 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Navigation size={20} className="text-blue-500" />
-                Chỉ đường (Google Maps)
-              </a>
+                <Navigation size={20} className={isLoadingRoute ? 'animate-spin' : 'text-blue-500'} />
+                {isLoadingRoute ? 'Đang tìm đường...' : (routeCoordinates ? 'Xóa chỉ đường' : 'Chỉ đường trên bản đồ')}
+              </button>
             </div>
 
             {/* Other items from the same shop */}
@@ -238,7 +270,7 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
         <button
           onClick={onLocationRequest}
           disabled={isGettingLocation}
-          className="absolute top-4 left-4 z-[1000] bg-white p-3 rounded-xl shadow-lg border border-black/5 hover:bg-blue-50 transition-all text-blue-600 flex items-center justify-center disabled:opacity-50"
+          className="absolute bottom-4 left-4 z-[1000] bg-white p-3 rounded-xl shadow-lg border border-black/5 hover:bg-blue-50 transition-all text-blue-600 flex items-center justify-center disabled:opacity-50"
         >
           <Navigation size={24} className={isGettingLocation ? 'geolocation-loading' : ''} />
         </button>
@@ -274,7 +306,7 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
 
           {userLocation && distanceFilter && (
             <Circle
-              // @ts-expect-error - React Leaflet v5 type mismatch
+              // ts-expect-error - React Leaflet v5 type mismatch
               center={[userLocation.lat, userLocation.lng]}
               radius={distanceFilter * 1000}
               pathOptions={{
@@ -284,6 +316,18 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
                 weight: 2,
                 opacity: 0.6,
                 dashArray: '5, 10'
+              }}
+            />
+          )}
+
+          {routeCoordinates && (
+            <Polyline
+              positions={routeCoordinates}
+              pathOptions={{
+                color: '#2563eb',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '10, 5'
               }}
             />
           )}
