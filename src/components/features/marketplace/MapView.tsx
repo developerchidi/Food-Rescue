@@ -186,14 +186,26 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
               </div>
             </div>
 
-            <button
-              onClick={() => router.push(`/rescue/confirm/${selectedPost.id}`)}
-              disabled={selectedPost.quantity === 0}
-              className="w-full h-16 bg-mint-darker text-white font-black rounded-2xl shadow-xl shadow-mint-darker/20 hover:shadow-2xl hover:shadow-mint-darker/30 transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale mb-8"
-            >
-              <ShoppingCart size={22} />
-              {selectedPost.quantity === 0 ? "Đã hết" : "Giải cứu ngay"}
-            </button>
+            <div className="flex flex-col gap-4 mb-8">
+              <button
+                onClick={() => router.push(`/rescue/confirm/${selectedPost.id}`)}
+                disabled={selectedPost.quantity === 0}
+                className="w-full h-16 bg-mint-darker text-white font-black rounded-2xl shadow-xl shadow-mint-darker/20 hover:shadow-2xl hover:shadow-mint-darker/30 transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
+              >
+                <ShoppingCart size={22} />
+                {selectedPost.quantity === 0 ? "Đã hết" : "Giải cứu ngay"}
+              </button>
+
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPost.donor.latitude},${selectedPost.donor.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full h-14 bg-white border-2 border-mint-primary/30 text-mint-darker font-bold rounded-2xl hover:bg-mint-primary/5 transition-all flex items-center justify-center gap-3"
+              >
+                <Navigation size={20} className="text-blue-500" />
+                Chỉ đường (Google Maps)
+              </a>
+            </div>
 
             {/* Other items from the same shop */}
             {selectedGroup.length > 1 && (
@@ -260,9 +272,25 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
             <Marker position={[userLocation.lat, userLocation.lng]} icon={userLocationIcon} />
           )}
 
+          {userLocation && distanceFilter && (
+            // @ts-ignore
+            <Circle
+              center={[userLocation.lat, userLocation.lng]}
+              radius={distanceFilter * 1000}
+              pathOptions={{
+                fillColor: '#52b788',
+                fillOpacity: 0.1,
+                color: '#52b788',
+                weight: 2,
+                dashArray: '5, 10'
+              }}
+            />
+          )}
+
           {groupedPosts.map((group, groupIdx) => {
             const firstPost = group[0];
             const hasMultiple = group.length > 1;
+            const markerIcon = getMarkerIcon(firstPost);
 
             return (
               firstPost.donor?.latitude && firstPost.donor?.longitude && (
@@ -273,23 +301,9 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
                   icon={L.divIcon({
                     html: `
                       <div class="relative w-10 h-10">
-                        <div class="custom-marker ${firstPost.type === 'MYSTERY_BOX' ? 'mystery-box' : 'single-item'}">
-                          ${firstPost.type === 'MYSTERY_BOX' ? `
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-                              <path d="m3.3 7 8.7 5 8.7-5"/>
-                              <path d="M12 22V12"/>
-                            </svg>
-                          ` : `
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                              <circle cx="12" cy="12" r="10"/>
-                              <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
-                              <path d="M12 18V6"/>
-                            </svg>
-                          `}
-                        </div>
+                        ${markerIcon.options.html}
                         ${hasMultiple ? `
-                          <div class="absolute -top-1 -right-1 bg-[#ffaaa5] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm z-[1001]">
+                          <div class="absolute -top-1 -right-1 bg-peach-deep text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm z-[1001]" style="transform: none;">
                             ${group.length}
                           </div>
                         ` : ''}
