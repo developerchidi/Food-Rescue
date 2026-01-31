@@ -77,13 +77,19 @@ export default function MarketplaceClient({ initialData }: MarketplaceClientProp
     setCurrentPage(1);
   }, [viewMode, searchQuery, activeCategory, distanceFilter]);
 
+  // Auto-get user location on mount
+  useEffect(() => {
+    handleGetLocation();
+  }, []);
+
   const handleGetLocation = async () => {
     setIsGettingLocation(true);
     try {
       const location = await getUserLocation();
       setUserLocation(location);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Không thể lấy vị trí');
+      // Silently fail - user can manually request location if needed
+      console.error('Không thể tự động lấy vị trí:', error);
     } finally {
       setIsGettingLocation(false);
     }
