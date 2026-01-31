@@ -88,7 +88,6 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
   const [selectedGroup, setSelectedGroup] = useState<any[] | null>(null);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
   const [routeCoordinates, setRouteCoordinates] = useState<[number, number][] | null>(null);
-  const [isLoadingRoute, setIsLoadingRoute] = useState(false);
 
   const groupedPosts = useMemo(() => {
     const groups: { [key: string]: any[] } = {};
@@ -117,6 +116,35 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
       document.body.style.overflow = 'unset';
     };
   }, [isExpanded]);
+
+  // Auto fetch route when selectedPost changes
+  useEffect(() => {
+    const fetchRoute = async () => {
+      if (!selectedPost || !userLocation || !selectedPost.donor?.latitude || !selectedPost.donor?.longitude) {
+        setRouteCoordinates(null);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `https://router.project-osrm.org/route/v1/driving/${userLocation.lng},${userLocation.lat};${selectedPost.donor.longitude},${selectedPost.donor.latitude}?overview=full&geometries=geojson`
+        );
+        const data = await response.json();
+
+        if (data.routes && data.routes[0]) {
+          const coords = data.routes[0].geometry.coordinates.map(
+            (coord: [number, number]) => [coord[1], coord[0]] as [number, number]
+          );
+          setRouteCoordinates(coords);
+        }
+      } catch (error) {
+        console.error('Lỗi khi tìm đường:', error);
+        setRouteCoordinates(null);
+      }
+    };
+
+    fetchRoute();
+  }, [selectedPost, userLocation]);
 
   // Default position (Hồ Chí Minh City)
   const position: [number, number] = [10.7769, 106.7009];
@@ -196,46 +224,6 @@ export default function MapView({ posts, userLocation, distanceFilter, onLocatio
               >
                 <ShoppingCart size={22} />
                 {selectedPost.quantity === 0 ? "Đã hết" : "Giải cứu ngay"}
-              </button>
-
-              <button
-                onClick={async () => {
-                  // Nếu đã có route, xóa đi
-                  if (routeCoordinates) {
-                    setRouteCoordinates(null);
-                    return;
-                  }
-
-                  if (!userLocation || !selectedPost.donor?.latitude || !selectedPost.donor?.longitude) {
-                    alert('Không thể tìm đường. Vui lòng bật vị trí của bạn.');
-                    return;
-                  }
-
-                  setIsLoadingRoute(true);
-                  try {
-                    const response = await fetch(
-                      `https://router.project-osrm.org/route/v1/driving/${userLocation.lng},${userLocation.lat};${selectedPost.donor.longitude},${selectedPost.donor.latitude}?overview=full&geometries=geojson`
-                    );
-                    const data = await response.json();
-
-                    if (data.routes && data.routes[0]) {
-                      const coords = data.routes[0].geometry.coordinates.map(
-                        (coord: [number, number]) => [coord[1], coord[0]] as [number, number]
-                      );
-                      setRouteCoordinates(coords);
-                    }
-                  } catch (error) {
-                    console.error('Lỗi khi tìm đường:', error);
-                    alert('Không thể tìm đường. Vui lòng thử lại.');
-                  } finally {
-                    setIsLoadingRoute(false);
-                  }
-                }}
-                disabled={isLoadingRoute || !userLocation}
-                className="w-full h-14 bg-white border-2 border-mint-primary/30 text-mint-darker font-bold rounded-2xl hover:bg-mint-primary/5 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Navigation size={20} className={isLoadingRoute ? 'animate-spin' : 'text-blue-500'} />
-                {isLoadingRoute ? 'Đang tìm đường...' : (routeCoordinates ? 'Xóa chỉ đường' : 'Chỉ đường trên bản đồ')}
               </button>
             </div>
 
