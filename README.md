@@ -149,3 +149,7 @@ Mọi ý kiến đóng góp và Pull Request luôn được hoan nghênh. Hãy t
 ---
 
 *Hành động nhỏ, tác động lớn. Cùng Food Rescue bảo vệ hành tinh của chúng ta!* nội dung chính
+<!-- Jira Sync Test SCRUM-3 -->
+<!-- Jira Sync Test SCRUM-8 -->
+<!-- Jira Sync Test SCRUM-6 -->
+<!-- Jira Final Sync Test SCRUM-6 Pattern 2 -->

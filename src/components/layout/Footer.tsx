@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
 
 export default function Footer() {
+  const pathname = usePathname();
+
   return (
     <footer className="bg-white border-t border-black/5 pt-24 pb-12">
       <div className="container mx-auto px-6">
@@ -27,13 +32,66 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-black mb-4 text-[#2d3436]">Khám phá</h4>
             <ul className="space-y-2">
-              {["Trang chủ", "Bản đồ thực phẩm", "Về chúng tôi", "Đối tác & Merchant", "Tác động cộng đồng"].map((link, i) => (
-                <li key={i}>
-                  <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
-                    {link}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link 
+                  href="/" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Trang chủ
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/marketplace" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/marketplace" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Bản đồ thực phẩm
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/about" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/about" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Về chúng tôi
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/partners" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/partners" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Đối tác & Merchant
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/impact" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/impact" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Tác động cộng đồng
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -41,13 +99,66 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-black mb-4 text-[#2d3436]">Hỗ trợ</h4>
             <ul className="space-y-2">
-              {["Điều khoản sử dụng", "Chính sách bảo mật", "Câu hỏi thường gặp", "Trung tâm trợ giúp", "Liên hệ hợp tác"].map((link, i) => (
-                <li key={i}>
-                  <Link href="#" className="text-foreground/50 hover:text-mint-darker transition-colors font-medium">
-                    {link}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link 
+                  href="/terms" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/terms" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Điều khoản sử dụng
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/privacy" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/privacy" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Chính sách bảo mật
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/faq" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/faq" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Câu hỏi thường gặp
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/help" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/help" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Trung tâm trợ giúp
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/contact" 
+                  className={`transition-colors font-medium ${
+                    pathname === "/contact" 
+                      ? "text-mint-darker" 
+                      : "text-foreground/50 hover:text-mint-darker"
+                  }`}
+                >
+                  Liên hệ hợp tác
+                </Link>
+              </li>
             </ul>
           </div>
 

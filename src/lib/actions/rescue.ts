@@ -3,6 +3,8 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { ZodError } from "zod";
+import { RescueSchema } from "@/lib/validators/donations";
 
 export async function rescueFood(
   postId: string,
@@ -11,15 +13,40 @@ export async function rescueFood(
   address?: string,
   phone?: string
 ) {
+  try {
+    const parsed = RescueSchema.parse({
+      postId,
+      quantity,
+      fulfillmentMethod,
+      address,
+      phone,
+    });
+
+    postId = parsed.postId;
+    quantity = parsed.quantity;
+    fulfillmentMethod = parsed.fulfillmentMethod;
+    address = parsed.address;
+    phone = parsed.phone;
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return {
+        error: "Dữ liệu không hợp lệ.",
+        issues: error.issues,
+      };
+    }
+    throw error;
+  }
+
   const session = await auth();
 
   if (!session?.user?.id) {
     return { error: "Bạn cần đăng nhập để thực hiện hành động này." };
   }
 
+  const userId = session.user.id;
+
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Kiểm tra bài đăng còn đủ số lượng không
       const post = await tx.foodPost.findUnique({
         where: { id: postId },
       });
@@ -32,21 +59,23 @@ export async function rescueFood(
         throw new Error("Sản phẩm đã hết hoặc không đủ số lượng.");
       }
 
-      // 2. Tạo bản ghi Donation
       const donation = await tx.donation.create({
         data: {
           postId: post.id,
-          receiverId: session.user.id,
-          quantity: quantity,
-          fulfillmentMethod: fulfillmentMethod,
+          receiverId: userId,
+          quantity,
+          fulfillmentMethod,
           deliveryAddress: address,
           deliveryPhone: phone,
           status: "REQUESTED",
-          qrCode: `${fulfillmentMethod === "DELIVERY" ? "SHIP" : "REC"}-${post.id.slice(0, 4)}-${session.user.id.slice(0, 4)}-${Date.now().toString().slice(-6)}`,
+          qrCode: `${
+            fulfillmentMethod === "DELIVERY" ? "SHIP" : "REC"
+          }-${post.id.slice(0, 4)}-${userId.slice(0, 4)}-${Date.now()
+            .toString()
+            .slice(-6)}`,
         },
       });
 
-      // 3. Trừ số lượng tồn kho
       const newQuantity = post.quantity - quantity;
       await tx.foodPost.update({
         where: { id: postId },
