@@ -146,15 +146,15 @@ Dự án áp dụng mô hình **GitHub Flow** chuyên nghiệp để đảm bả
 
 Dự án được thực hiện bởi nhóm 7 thành viên đầy nhiệt huyết:
 
-| Thành viên | Vai trò | Trách nhiệm chính |
-| :--- | :--- | :--- |
-| **Chidi** | **Architect / Lead** | Security, Middleware, System Design, Core Backend Logic. |
-| **Nghi** | **Frontend Lead** | UI/UX Standards, Component Library, SEO. |
-| **Kiên** | **Backend Dev** | DB, API, Concurrency, Redis, Cron. |
-| **Cơ** | **Frontend Dev** | Feature Development (Profile, Stats), Web Client. |
-| **Mẫn** | **Frontend Dev** | Feature Development (Dashboard, Scanner), Web Client. |
-| **Toàn** | **QA / Tester** | API Testing, Unit Testing. |
-| **Kiệt** | **QA / Tester** | UI/UX Testing, Compatibility Testing. |
+| Thành viên | GitHub | Vai trò | Trách nhiệm chính |
+| :--- | :--- | :--- | :--- |
+| **Nguyễn Thành Lộc (Chidi)** | [@developerchidi](https://github.com/developerchidi) | **Architect / Lead** | Security, Middleware, System Design, Core Backend Logic. |
+| **Trần Thị Kim Nghi** | [@TranThiKimNghi](https://github.com/TranThiKimNghi) | **Frontend Lead** | UI/UX Standards, Component Library, SEO. |
+| **Nguyễn Trung Kiên** | [@TrungKevin](https://github.com/TrungKevin) | **Backend Dev** | DB, API, Concurrency, Redis, Cron. |
+| **Hà Thái Cơ** | [@hathaico](https://github.com/hathaico) | **Frontend Dev** | Feature Development (Profile, Stats), Web Client. |
+| **Minh Mẫn** | [@minhman010104](https://github.com/minhman010104) | **Frontend Dev** | Feature Development (Dashboard, Scanner), Web Client. |
+| **Huỳnh Toàn** | [@toanhuynh110804](https://github.com/toanhuynh110804) | **QA / Tester** | API Testing, Unit Testing. |
+| **Anh Kiệt** | [@AnhKiet0212](https://github.com/AnhKiet0212) | **QA / Tester** | UI/UX Testing, Compatibility Testing. |
 
 ## 🤝 Đóng góp
 
