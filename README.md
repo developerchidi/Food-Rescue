@@ -142,6 +142,20 @@ Dự án áp dụng mô hình **GitHub Flow** chuyên nghiệp để đảm bả
   - `bugfix/` : Sửa các lỗi được phát triển trong giai đoạn dev.
   - `hotfix/` : Sửa lỗi khẩn cấp trên Production.
 
+## 👥 Đội ngũ Phát triển (The Team)
+
+Dự án được thực hiện bởi nhóm 7 thành viên đầy nhiệt huyết:
+
+| Thành viên | Vai trò | Trách nhiệm chính |
+| :--- | :--- | :--- |
+| **Chidi** | **Architect / Lead** | Security, Middleware, System Design, Core Backend Logic. |
+| **Nghi** | **Frontend Lead** | UI/UX Standards, Component Library, SEO. |
+| **Kiên** | **Backend Dev** | DB, API, Concurrency, Redis, Cron. |
+| **Cơ** | **Frontend Dev** | Feature Development (Profile, Stats), Web Client. |
+| **Mẫn** | **Frontend Dev** | Feature Development (Dashboard, Scanner), Web Client. |
+| **Toàn** | **QA / Tester** | API Testing, Unit Testing. |
+| **Kiệt** | **QA / Tester** | UI/UX Testing, Compatibility Testing. |
+
 ## 🤝 Đóng góp
 
 Mọi ý kiến đóng góp và Pull Request luôn được hoan nghênh. Hãy tham khảo tệp [CONTRIBUTING.md] hoặc liên hệ trực tiếp với chúng tôi.
