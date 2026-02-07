@@ -4,6 +4,7 @@ import { auth } from "@/auth"; // Đường dẫn auth có thể thay đổi tù
 import { prisma } from "@/lib/prisma";
 import { CreateFoodPostSchema, CreateFoodPostInput } from "@/lib/validators/posts";
 import { FoodPostService } from "@/services/FoodPostService";
+import { ReservationService } from "@/services/ReservationService";
 import { revalidatePath } from "next/cache";
 
 export type ActionState = {
@@ -52,7 +53,10 @@ export async function createFoodPost(data: CreateFoodPostInput): Promise<ActionS
       imageUrl: payload.imageUrl,
     });
 
-    // 4. Revalidate & Return
+    // 4. Initialize Redis Stock
+    await ReservationService.setInitialStock(post.id, post.quantity);
+
+    // 5. Revalidate & Return
     revalidatePath("/marketplace");
     revalidatePath("/manage/posts"); // Giả định route quản lý
 
