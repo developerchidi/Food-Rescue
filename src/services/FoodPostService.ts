@@ -10,6 +10,7 @@ export class FoodPostService {
     type: "MYSTERY_BOX" | "INDIVIDUAL";
     originalPrice: number;
     rescuePrice: number;
+    quantity: number;
     expiryDate: Date;
   }): Promise<FoodPost> {
     return prisma.foodPost.create({
