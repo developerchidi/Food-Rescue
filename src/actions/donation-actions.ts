@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { RescueSchema, RescueInput } from "@/lib/validators/donations";
 import { ReservationService } from "@/services/ReservationService";
+import { generateSecureQRToken } from "@/lib/qr";
 import { revalidatePath } from "next/cache";
 
 export type ActionState = {
@@ -68,7 +69,10 @@ export async function createDonation(data: RescueInput): Promise<ActionState> {
         throw new Error("Số lượng trong kho không đủ.");
       }
 
-      // 4.2. Create Donation
+      // 4.2. Generate QR Token
+      const qrToken = await generateSecureQRToken();
+
+      // 4.3. Create Donation
       const donation = await tx.donation.create({
         data: {
           postId: payload.postId,
@@ -78,10 +82,11 @@ export async function createDonation(data: RescueInput): Promise<ActionState> {
           deliveryAddress: payload.address,
           deliveryPhone: payload.phone,
           status: "REQUESTED",
+          qrCode: qrToken,
         },
       });
 
-      // 4.3. Update Post Quantity
+      // 4.4. Update Post Quantity
       const updatedPost = await tx.foodPost.update({
         where: { id: payload.postId },
         data: {
