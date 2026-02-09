@@ -5,11 +5,11 @@ import { redirect } from "next/navigation";
 import RescueFormProvider from "./RescueFormProvider";
 
 export default async function CreateRescuePage() {
- // const session = await auth();
+ const session = await auth();
 
-//   if (!session?.user?.id) {
-//     redirect("/login");
-//   }
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
 
   return (
     <main className="min-h-screen bg-background">
