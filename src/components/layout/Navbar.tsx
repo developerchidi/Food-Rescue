@@ -41,6 +41,11 @@ export default function Navbar() {
             <Link href="/#map" className="text-[15px] font-medium hover:text-mint-primary transition-colors">
               Bản đồ
             </Link>
+            {status === "authenticated" && (
+              <Link href="/merchant/settings" className="text-[15px] font-medium hover:text-mint-primary transition-colors">
+                Cài đặt
+              </Link>
+            )}
           </div>
 
           <div className="flex items-center gap-4">
