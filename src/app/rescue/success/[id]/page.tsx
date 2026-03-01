@@ -6,9 +6,10 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { getReservation } from "@/lib/redis-reservation";
+import ReservationCompleteButton from "./ReservationCompleteButton";
 
 interface SuccessPageProps {
   params: Promise<{
@@ -35,15 +36,31 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
     },
   });
 
-  if (!donation) {
-    notFound();
+  if (donation && donation.receiverId === session.user.id) {
+    return <DonationSuccessView donation={donation} id={id} />;
   }
 
-  // Security Check: Only the receiver can view their success page
-  if (donation.receiverId !== session.user.id) {
-    notFound();
+  const reservation = await getReservation(id);
+  if (reservation && reservation.userId === session.user.id) {
+    const post = await prisma.foodPost.findUnique({
+      where: { id: reservation.postId },
+      include: { donor: true },
+    });
+    if (post) {
+      return (
+        <ReservationPendingView
+          reservationId={id}
+          reservation={reservation}
+          post={post}
+        />
+      );
+    }
   }
 
+  notFound();
+}
+
+function DonationSuccessView({ donation, id }: { donation: any; id: string }) {
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <Navbar />
@@ -185,6 +202,68 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
         </div>
       </main>
 
+      <Footer />
+    </div>
+  );
+}
+
+function ReservationPendingView({
+  reservationId,
+  reservation,
+  post,
+}: {
+  reservationId: string;
+  reservation: { quantity: number; expiresAt: number; fulfillmentMethod: string };
+  post: any;
+}) {
+  const expiresAtDate = new Date(reservation.expiresAt * 1000);
+  return (
+    <div className="min-h-screen bg-white flex flex-col font-sans">
+      <Navbar />
+      <main className="flex-grow pt-32 pb-24 relative z-10">
+        <div className="container mx-auto px-6">
+          <Link
+            href="/marketplace"
+            className="inline-flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-12 hover:text-mint-darker transition-colors"
+          >
+            <ArrowLeft size={14} />
+            Quay lại chợ thực phẩm
+          </Link>
+          <div className="max-w-2xl mx-auto space-y-8">
+            <div className="p-6 rounded-2xl bg-amber-50/50 border border-amber-200">
+              <h1 className="text-2xl font-black text-slate-900 mb-2">
+                Đã giữ chỗ thành công
+              </h1>
+              <p className="text-sm text-slate-600 mb-4">
+                Bạn có <strong>10 phút</strong> để hoàn tất đơn. Sau đó chỗ sẽ được nhả lại cho người khác.
+              </p>
+              <p className="text-xs text-slate-500">
+                Hết hạn lúc: {expiresAtDate.toLocaleTimeString("vi-VN")} – {expiresAtDate.toLocaleDateString("vi-VN")}
+              </p>
+            </div>
+            <div className="flex gap-6 p-6 rounded-2xl bg-slate-50 border border-slate-100">
+              <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-white border border-slate-200 shrink-0">
+                <Image
+                  src={post.imageUrl || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop"}
+                  alt={post.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex-grow py-1 space-y-1">
+                <h3 className="text-xl font-black text-slate-900">{post.title}</h3>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  Số lượng: <span className="text-slate-900">{reservation.quantity} suất</span>
+                </p>
+                <p className="text-sm font-black text-mint-darker">
+                  {(post.rescuePrice || 0) * reservation.quantity}đ
+                </p>
+              </div>
+            </div>
+            <ReservationCompleteButton reservationId={reservationId} />
+          </div>
+        </div>
+      </main>
       <Footer />
     </div>
   );

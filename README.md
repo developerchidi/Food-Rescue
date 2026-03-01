@@ -20,7 +20,10 @@
 - **Backend & DB**: Prisma ORM, PostgreSQL (Supabase).
 - **Xác thực**: NextAuth.js v5 (Auth.js).
 - **Bản đồ**: Leaflet.js.
+- **Cache / Giữ chỗ**: Upstash Redis (reservation TTL 10 phút, atomic trừ kho ảo).
 - **UI/UX**: Framer Motion (micro-animations), Bento Grid Layout.
+
+> **Cơ chế Giữ chỗ (Reservation)**: Luồng Giải cứu dùng Redis để giữ chỗ tạm thời trước khi trừ DB, tránh lock DB và đảm bảo "vào Checkout là có hàng". Xem chi tiết: [docs/redis-reservation.md](docs/redis-reservation.md).
 
 ## 📦 Hướng dẫn Cài đặt
 

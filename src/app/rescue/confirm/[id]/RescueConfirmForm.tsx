@@ -49,7 +49,9 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
     if (result.error) {
       setError(result.error);
       setIsSubmitting(false);
-    } else {
+    } else if ("reservationId" in result && result.reservationId) {
+      router.push(`/rescue/success/${result.reservationId}`);
+    } else if ("donationId" in result && result.donationId) {
       router.push(`/rescue/success/${result.donationId}`);
     }
   };
