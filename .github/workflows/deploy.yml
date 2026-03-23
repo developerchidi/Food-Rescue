@@ -1,0 +1,31 @@
+name: Deploy Next.js App
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Thay tag này bằng Namespace/Repo trên DockerHub của bạn
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/food-rescue:latest 
+      
+      - name: Trigger Server Webhook
+        run: |
+          curl -X POST -H "Content-Type: application/json" ${{ secrets.DEPLOY_URL }}
+          echo "Webhook triggered successfully!"
