@@ -22,10 +22,24 @@ jobs:
         with:
           context: .
           push: true
-          # Thay tag này bằng Namespace/Repo trên DockerHub của bạn
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/food-rescue:latest 
+          # Cập nhật theo tài khoản của anh: devngchidi
+          tags: devngchidi/food-rescue:latest 
       
-      - name: Trigger Server Webhook
+      - name: Triển khai lên DevOps Classroom
         run: |
-          curl -X POST -H "Content-Type: application/json" ${{ secrets.DEPLOY_URL }}
-          echo "Webhook triggered successfully!"
+          REPO="repositories/devngchidi"
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOY_URL }}?repo=$REPO&tag=latest")
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          CODE=$(echo "$RESPONSE" | tail -n1)
+          echo "Webhook HTTP: $CODE"
+          if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 300 ]; then
+            echo "Deploy thất bại. Xem chi tiết trong nhóm log bên dưới."
+            echo "::group::Chi tiết webhook JSON"
+            echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
+            echo "::endgroup::"
+            exit 1
+          fi
+          echo "Deploy thành công."
+          echo "::group::Chi tiết webhook JSON"
+          echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
+          echo "::endgroup::"
