@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { fetchFromBackend } from "@/lib/proxy";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -14,21 +14,7 @@ export default async function OrdersPage() {
     redirect("/login");
   }
 
-  const orders = await prisma.donation.findMany({
-    where: {
-      receiverId: session.user.id,
-    },
-    include: {
-      post: {
-        include: {
-          donor: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const orders: any[] = await fetchFromBackend("/donations/my-orders") || [];
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">

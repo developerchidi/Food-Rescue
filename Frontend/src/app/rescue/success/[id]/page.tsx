@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { fetchFromBackend } from "@/lib/proxy";
 import { notFound } from "next/navigation";
 import QRCodeDisplay from "@/components/features/marketplace/QRCodeDisplay";
 import { CheckCircle2, MapPin, Clock, ArrowLeft, Phone, Info, Truck } from "lucide-react";
@@ -24,16 +24,7 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
     redirect("/login");
   }
 
-  const donation = await prisma.donation.findUnique({
-    where: { id },
-    include: {
-      post: {
-        include: {
-          donor: true,
-        },
-      },
-    },
-  });
+  const donation = await fetchFromBackend(`/donations/${id}`);
 
   if (!donation) {
     notFound();

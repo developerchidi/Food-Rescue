@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { fetchFromBackend } from "@/lib/proxy";
 import MarketplaceClient from "@/components/features/marketplace/MarketplaceClient";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -6,24 +6,8 @@ import Footer from "@/components/layout/Footer";
 export const dynamic = "force-dynamic";
 
 export default async function MarketplacePage() {
-  // Fetch real data from Supabase
-  const foodPosts = await prisma.foodPost.findMany({
-    where: {
-      status: "AVAILABLE",
-    },
-    include: {
-      donor: {
-        select: {
-          name: true,
-          latitude: true,
-          longitude: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  // Fetch real data from Backend API
+  const foodPosts = await fetchFromBackend("/posts", { next: { revalidate: 60 } }) || [];
 
   return (
     <main className="min-h-screen bg-[#fdfcf8]">

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { fetchFromBackend } from "@/lib/proxy";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { ArrowLeft, MapPin, Clock, ShieldCheck, Info, AlertTriangle } from "lucide-react";
@@ -24,18 +24,7 @@ export default async function RescueConfirmPage({ params }: ConfirmPageProps) {
     redirect("/login");
   }
 
-  const post = await prisma.foodPost.findUnique({
-    where: { id },
-    include: {
-      donor: {
-        select: {
-          name: true,
-          latitude: true,
-          longitude: true,
-        },
-      },
-    },
-  });
+  const post: any = await fetchFromBackend(`/posts/${id}`);
 
   if (!post) {
     notFound();
