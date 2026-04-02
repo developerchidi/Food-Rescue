@@ -1,6 +1,5 @@
 name: CI/CD Pipeline
 
-# Pipeline chay khi push/PR vao main hoac develop.
 on:
   push:
     branches: ["main", "develop"]
@@ -13,6 +12,15 @@ jobs:
     defaults:
       run:
         working-directory: Frontend
+
+    env:
+      AUTH_SECRET: ci-build-placeholder-secret-32chars-minimum-xx
+      NEXTAUTH_URL: http://localhost:3000
+      AUTH_TRUST_HOST: "true"
+      NEXT_PUBLIC_API_URL: http://127.0.0.1:3001
+      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ci-dummy
+      CLOUDINARY_API_KEY: ci-dummy
+      CLOUDINARY_API_SECRET: ci-dummy
 
     steps:
       - uses: actions/checkout@v4
