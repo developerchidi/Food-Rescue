@@ -1,12 +1,38 @@
 services:
-  app:
+  frontend:
     build:
-      context: .
+      context: ./Frontend
+      dockerfile: Dockerfile
+      args:
+        - AUTH_SECRET=${AUTH_SECRET:-supperproject}
+        - NEXT_PUBLIC_API_URL=http://backend:3001
+        - AUTH_URL=http://localhost:3000
+        - AUTH_TRUST_HOST=true
+    restart: always
+    ports:
+      - "3000:80"
+    env_file:
+      - ./Frontend/.env
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:3001
+      - AUTH_SECRET=${AUTH_SECRET:-supperproject}
+      - AUTH_URL=${AUTH_URL:-http://localhost:3000}
+      - AUTH_TRUST_HOST=true
+
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3001"
     env_file:
       - .env
     environment:
       - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET:-super-secret-key-for-dev}

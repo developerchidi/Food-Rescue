@@ -1,0 +1,43 @@
+
+> food-rescue@0.1.0 build
+> next build
+
+▲ Next.js 16.1.4 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 4.0s
+  Running TypeScript ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/18) ...
+  Generating static pages using 15 workers (4/18) 
+  Generating static pages using 15 workers (8/18) 
+  Generating static pages using 15 workers (13/18) 
+✓ Generating static pages using 15 workers (18/18) in 381.0ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ƒ /api/auth/[...nextauth]
+├ ƒ /api/auth/register
+├ ƒ /api/contact
+├ ○ /contact
+├ ○ /faq
+├ ○ /help
+├ ○ /impact
+├ ○ /login
+├ ƒ /marketplace
+├ ƒ /orders
+├ ○ /partners
+├ ○ /privacy
+├ ○ /register
+├ ƒ /rescue/confirm/[id]
+├ ○ /rescue/create
+├ ƒ /rescue/success/[id]
+└ ○ /terms
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
