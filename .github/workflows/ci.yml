@@ -1,3 +1,4 @@
+# N11CT2-56 — Monorepo: chạy npm/eslint/tsc/build trong thư mục Frontend
 name: CI/CD Pipeline
 
 on:
@@ -6,8 +7,16 @@ on:
   pull_request:
     branches: ["main", "develop"]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   frontend:
+    name: Frontend (lint, typecheck, build)
     runs-on: ubuntu-latest
     defaults:
       run:
