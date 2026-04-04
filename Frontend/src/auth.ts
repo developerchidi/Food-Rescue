@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const nextAuth = NextAuth({
   providers: [
     Credentials({
       name: "Credentials",
@@ -66,4 +66,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   session: { strategy: "jwt" },
-})
+});
+
+export const handlers = nextAuth.handlers;
+export const auth = nextAuth.auth;
+export const signIn = nextAuth.signIn;
+export const signOut = nextAuth.signOut;
