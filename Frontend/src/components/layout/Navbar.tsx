@@ -38,6 +38,9 @@ export default function Navbar() {
             <Link href="/orders" className="text-[15px] font-medium hover:text-mint-primary transition-colors">
               Đơn hàng
             </Link>
+            <Link href="/profile" className="text-[15px] font-medium hover:text-mint-primary transition-colors">
+              Profile
+            </Link>
             <Link href="/#map" className="text-[15px] font-medium hover:text-mint-primary transition-colors">
               Bản đồ
             </Link>
