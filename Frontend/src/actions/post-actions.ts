@@ -3,6 +3,7 @@
 import { auth } from "@/auth"; // Đường dẫn auth có thể thay đổi tùy config, check lại nếu lỗi
 import { fetchFromBackend } from "@/lib/proxy";
 import { revalidatePath } from "next/cache";
+import { CreateFoodPostSchema, type CreateFoodPostInput } from "@/lib/validators/posts";
 
 export type ActionState = {
   success: boolean;
@@ -11,7 +12,7 @@ export type ActionState = {
   data?: any;
 };
 
-export async function createFoodPost(data: any): Promise<ActionState> {
+export async function createFoodPost(data: CreateFoodPostInput): Promise<ActionState> {
   const session = await auth();
 
   // 1. Check Auth & Role
@@ -20,18 +21,28 @@ export async function createFoodPost(data: any): Promise<ActionState> {
   }
 
   try {
+    const parsed = CreateFoodPostSchema.safeParse(data);
+
+    if (!parsed.success) {
+      return {
+        success: false,
+        message: "Dữ liệu bài đăng không hợp lệ.",
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      };
+    }
+
     // 2. Call Service via API
     const post = await fetchFromBackend("/posts", {
       method: "POST",
       body: JSON.stringify({
-        title: data.title,
-        description: data.description,
-        type: data.type,
-        originalPrice: data.originalPrice || 0,
-        rescuePrice: data.rescuePrice || 0,
-        quantity: data.quantity,
-        expiryDate: data.expiryDate,
-        imageUrl: data.imageUrl,
+        title: parsed.data.title,
+        description: parsed.data.description,
+        type: parsed.data.type,
+        originalPrice: parsed.data.originalPrice ?? 0,
+        rescuePrice: parsed.data.rescuePrice ?? 0,
+        quantity: parsed.data.quantity,
+        expiryDate: parsed.data.expiryDate,
+        imageUrl: parsed.data.imageUrl,
       }),
     });
 
