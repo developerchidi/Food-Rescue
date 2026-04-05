@@ -29,6 +29,9 @@ Tai lieu nay duoc viet de dev/QA co the chay lai doc lap, khong can giai thich t
 - Backend/src/lib/validators/donations.ts
 - Frontend/src/app/rescue/create/page.tsx
 - Frontend/src/app/rescue/create/RescueFormProvider.tsx
+- Frontend/src/actions/post-actions.ts
+- Frontend/src/actions/upload-actions.ts
+- Frontend/src/lib/validators/posts.ts
 - Frontend/src/app/marketplace/page.tsx
 - Frontend/src/components/features/marketplace/MarketplaceClient.tsx
 - Frontend/src/components/features/FoodCard.tsx
@@ -56,11 +59,9 @@ Tai lieu nay duoc viet de dev/QA co the chay lai doc lap, khong can giai thich t
 - Account khac khong lien quan don de test ownership
 
 ### 5.3 Luu y hien trang san pham
-- Trang /rescue/create hien tai dang la mock UI (nut "Dang bai" chi alert thanh cong, chua goi API).
-- Vi vay can tach:
-  - Test UI checklist cho /rescue/create
-  - Test API create post de tao du lieu that cho luong Marketplace -> Order
-- Day la expected defect can report neu product yeu cau tao post that tren UI.
+- Trang /rescue/create dung `RescueFormProvider`: goi server action `createFoodPost` (va upload anh len Cloudinary neu co chon file).
+- Khi backend + auth on, submit thanh cong se tao post that; sau thanh cong dieu huong ve `/marketplace` (theo code hien tai).
+- Van nen giu test API POST /api/posts de regression nhanh va doi chieu status/message voi tai lieu.
 
 ## 6. Role-based behavior matrix
 
@@ -105,18 +106,17 @@ Tai lieu nay duoc viet de dev/QA co the chay lai doc lap, khong can giai thich t
 - Expected:
   - Hien alert loi thoi gian het han khong hop le.
 
-### TC-CP-004 - Tao post that tu UI (known gap)
+### TC-CP-004 - Tao post that tu UI (happy path)
 - Priority: P0
+- Precondition: Dang nhap user hop le, backend chay, co the dung tai khoan DONOR theo test-data.md
 - Steps:
-  1. Nhap day du thong tin hop le.
-  2. Bam "Dang bai".
-  3. Mo /marketplace tim post vua tao.
-- Expected theo business:
-  - Co post moi tren marketplace.
-- Actual hien trang (du kien):
-  - Chi alert mock, khong tao post that.
-- Ket luan:
-  - Log defect muc do P0 neu release yeu cau tao post truc tiep tren UI.
+  1. Nhap day du thong tin hop le tren wizard (step 1-4).
+  2. (Tuy chon) chon anh de upload Cloudinary.
+  3. Bam "Dang bai".
+  4. Mo /marketplace tim post vua tao (title hoac mo ta).
+- Expected:
+  - Hien thi loi ro rang neu validate fail hoac API/Cloudinary loi.
+  - Thanh cong: redirect ve `/marketplace`; post moi xuat hien khi con AVAILABLE va chua het han.
 
 ## B. Create Post API (POST /api/posts)
 
@@ -361,7 +361,7 @@ Tai lieu nay duoc viet de dev/QA co the chay lai doc lap, khong can giai thich t
 - [ ] P1 - CP UI: Wizard step navigation hoat dong dung
 - [ ] P1 - MP: Search/filter/list-map hoat dong
 - [ ] P1 - OR: Empty state don hang dung
-- [ ] P0 bug check - /rescue/create hien tai chi mock, khong tao post that
+- [ ] P0 - /rescue/create: submit UI tao post that + post hien tren marketplace (khi backend/auth OK)
 
 ## 9. Team review truoc khi dong task
 
@@ -370,7 +370,7 @@ Tai lieu nay duoc viet de dev/QA co the chay lai doc lap, khong can giai thich t
 - [ ] Dev backend confirm expected API status/message khop implementation
 - [ ] Dev frontend confirm expected UI behavior va redirect
 - [ ] Product owner confirm role policy (receiver co duoc create post hay khong)
-- [ ] Team thong nhat xu ly known gap cua /rescue/create
+- [ ] Team thong nhat hanh vi upload anh (Cloudinary) va thong bao loi tren /rescue/create
 
 ### 9.2 De xuat nghi thuc review
 1. QA chay P0 truoc, ghi pass/fail + evidence (screenshot/log API).
