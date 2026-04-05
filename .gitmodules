@@ -1,3 +1,4 @@
 [submodule "Backend"]
   path = Backend
   url = https://github.com/developerchidi/Food-Rescue-Core.git
+  branch = main
