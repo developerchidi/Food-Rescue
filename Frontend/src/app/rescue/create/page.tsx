@@ -1,7 +1,5 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import RescueForm from "@/components/RescueForm";
 
 export default async function CreateRescuePage() {
