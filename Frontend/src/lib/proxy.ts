@@ -1,6 +1,15 @@
 import { auth } from "@/auth";
+import { BACKEND_API_BASE } from "@/lib/backend-url";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+export class BackendApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "BackendApiError";
+    this.status = status;
+  }
+}
 
 export async function fetchFromBackend(endpoint: string, options: RequestInit = {}) {
   const session = await auth();
@@ -12,7 +21,7 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
     ...options.headers,
   };
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
+  const response = await fetch(`${BACKEND_API_BASE}${endpoint}`, {
     ...options,
     headers,
   });
@@ -25,7 +34,7 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
     } catch {
       errorMessage = response.statusText;
     }
-    throw new Error(errorMessage);
+    throw new BackendApiError(errorMessage, response.status);
   }
 
   // Handle empty responses
