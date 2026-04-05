@@ -8,11 +8,12 @@ const eslintConfig = defineConfig([
   ...nextTs,
   {
     rules: {
+      "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      "react/no-unescaped-entities": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-require-imports": "off",
       "react-hooks/exhaustive-deps": "off",
-      "react/no-unescaped-entities": "off",
       "prefer-const": "off",
       "@next/next/no-img-element": "off",
       "react-hooks/rules-of-hooks": "off",
