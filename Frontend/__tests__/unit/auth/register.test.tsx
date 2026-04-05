@@ -54,6 +54,7 @@ describe("RegisterPage", () => {
           name: "Nguyen Van A",
           email: "newuser@example.com",
           password: "12345678",
+          registerAsMerchant: false,
         }),
       });
     });
