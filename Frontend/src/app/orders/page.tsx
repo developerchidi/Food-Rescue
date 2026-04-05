@@ -23,7 +23,7 @@ export default async function OrdersPage() {
       <main className="flex-grow pt-32 pb-24 relative z-10">
         <div className="container mx-auto px-6">
           <header className="mb-16 space-y-4">
-            <h1 className="text-5xl font-black text-slate-900 tracking-tighter italic">
+            <h1 data-testid="orders-title" className="text-5xl font-black text-slate-900 tracking-tighter italic">
               Đơn hàng <span className="text-mint-primary">của tôi</span>
             </h1>
             <p className="text-base font-medium text-slate-500 leading-relaxed max-w-xl italic">
@@ -52,6 +52,7 @@ export default async function OrdersPage() {
               {orders.map((order) => (
                 <div
                   key={order.id}
+                  data-testid={`order-card-${order.id}`}
                   className="group relative bg-white border border-slate-100 rounded-3xl p-6 lg:p-8 flex flex-col lg:flex-row lg:items-center gap-8 hover:border-mint-primary/30 hover:shadow-2xl hover:shadow-mint-primary/5 transition-all duration-500"
                 >
                   {/* Product Image */}
@@ -71,7 +72,7 @@ export default async function OrdersPage() {
                   <div className="flex-grow space-y-6">
                     <div className="space-y-2">
                       <div className="flex flex-wrap items-center gap-3">
-                        <h2 className="text-2xl font-black text-slate-900 tracking-tight group-hover:text-mint-darker transition-colors lowercase first-letter:uppercase">
+                        <h2 data-testid={`order-title-${order.id}`} className="text-2xl font-black text-slate-900 tracking-tight group-hover:text-mint-darker transition-colors lowercase first-letter:uppercase">
                           {order.post.title}
                         </h2>
                         <span className="px-2 py-0.5 bg-slate-900 text-white rounded text-[8px] font-black uppercase tracking-widest italic">

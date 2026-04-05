@@ -1,12 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, ImagePlus } from "lucide-react";
+import { ArrowLeft, ArrowRight, ImagePlus, Loader2 } from "lucide-react";
+import { createFoodPost } from "@/actions/post-actions";
+import { uploadImageAction } from "@/actions/upload-actions";
+import { useRouter } from "next/navigation";
 
 type FoodType = "INDIVIDUAL" | "MYSTERY_BOX";
 
 export default function RescueFormProvider() {
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const router = useRouter();
 
   const [form, setForm] = useState({
     title: "",
@@ -22,6 +29,14 @@ export default function RescueFormProvider() {
   const nextStep = () => setStep((s) => Math.min(s + 1, 4));
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
+  const fileToBase64 = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error("Không thể đọc file ảnh."));
+      reader.readAsDataURL(file);
+    });
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -36,36 +51,68 @@ export default function RescueFormProvider() {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, image: e.target.files?.[0] || null });
+    setError(null);
+    setSuccess(null);
+  };
+
   const handleSubmit = async () => {
+    setError(null);
+    setSuccess(null);
+
     if (
       Number(form.rescuePrice) >= Number(form.originalPrice)
     ) {
-      alert("❌ Giá cứu phải nhỏ hơn giá gốc");
+      setError("Giá cứu phải nhỏ hơn giá gốc.");
       return;
     }
 
     if (new Date(form.expiryDate) <= new Date()) {
-      alert("❌ Thời gian hết hạn không hợp lệ");
+      setError("Thời gian hết hạn không hợp lệ.");
       return;
     }
 
-    const payload = {
-      title: form.title,
-      description: form.description || null,
-      type: form.type,
-      originalPrice: form.originalPrice
-        ? Number(form.originalPrice)
-        : null,
-      rescuePrice: form.rescuePrice
-        ? Number(form.rescuePrice)
-        : null,
-      quantity: form.quantity,
-      expiryDate: new Date(form.expiryDate),
-      image: form.image, // backend sẽ xử lý upload → imageUrl
-    };
+    setIsSubmitting(true);
 
-    console.log("POST DATA 👉", payload);
-    alert("🎉 Tạo bài đăng thành công (mock)");
+    try {
+      let imageUrl: string | undefined;
+
+      if (form.image) {
+        const base64Image = await fileToBase64(form.image);
+        const uploadResult = await uploadImageAction(base64Image, "posts");
+
+        if (!uploadResult.success) {
+          setError(uploadResult.error || "Không thể tải ảnh lên Cloudinary.");
+          return;
+        }
+
+        imageUrl = uploadResult.url;
+      }
+
+      const result = await createFoodPost({
+        title: form.title,
+        description: form.description || undefined,
+        type: form.type,
+        originalPrice: Number(form.originalPrice || 0),
+        rescuePrice: Number(form.rescuePrice || 0),
+        quantity: form.quantity,
+        expiryDate: new Date(form.expiryDate),
+        imageUrl,
+      });
+
+      if (!result.success) {
+        setError(result.message || "Không thể tạo bài đăng.");
+        return;
+      }
+
+      setSuccess("Đăng bài thành công. Ảnh đã được tải lên Cloudinary.");
+      router.push("/marketplace");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Đã xảy ra lỗi khi đăng bài.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -90,6 +137,8 @@ export default function RescueFormProvider() {
           <input
             name="title"
             placeholder="Tên món"
+            title="Tên món"
+            aria-label="Tên món"
             value={form.title}
             onChange={handleChange}
             className="w-full mb-4 px-4 py-3 rounded-xl border"
@@ -98,6 +147,8 @@ export default function RescueFormProvider() {
           <textarea
             name="description"
             placeholder="Mô tả ngắn"
+            title="Mô tả ngắn"
+            aria-label="Mô tả ngắn"
             value={form.description}
             onChange={handleChange}
             className="w-full mb-4 px-4 py-3 rounded-xl border"
@@ -105,6 +156,8 @@ export default function RescueFormProvider() {
 
           <select
             name="type"
+            title="Loại món"
+            aria-label="Loại món"
             value={form.type}
             onChange={handleChange}
             className="w-full px-4 py-3 rounded-xl border"
@@ -125,6 +178,8 @@ export default function RescueFormProvider() {
               name="originalPrice"
               type="number"
               placeholder="Giá gốc"
+              title="Giá gốc"
+              aria-label="Giá gốc"
               value={form.originalPrice}
               onChange={handleChange}
               className="px-4 py-3 rounded-xl border"
@@ -133,6 +188,8 @@ export default function RescueFormProvider() {
               name="rescuePrice"
               type="number"
               placeholder="Giá cứu"
+              title="Giá cứu"
+              aria-label="Giá cứu"
               value={form.rescuePrice}
               onChange={handleChange}
               className="px-4 py-3 rounded-xl border"
@@ -143,6 +200,8 @@ export default function RescueFormProvider() {
             name="quantity"
             type="number"
             min={1}
+            title="Số lượng"
+            aria-label="Số lượng"
             value={form.quantity}
             onChange={handleChange}
             className="w-full px-4 py-3 rounded-xl border"
@@ -158,6 +217,8 @@ export default function RescueFormProvider() {
           <input
             name="expiryDate"
             type="datetime-local"
+            title="Thời hạn hết hạn"
+            aria-label="Thời hạn hết hạn"
             value={form.expiryDate}
             onChange={handleChange}
             className="w-full mb-4 px-4 py-3 rounded-xl border"
@@ -170,11 +231,14 @@ export default function RescueFormProvider() {
               type="file"
               hidden
               accept="image/*"
-              onChange={(e) =>
-                setForm({ ...form, image: e.target.files?.[0] || null })
-              }
+              title="Chọn hình ảnh"
+              aria-label="Chọn hình ảnh"
+              onChange={handleFileChange}
             />
           </label>
+          <p className="mt-3 text-xs text-foreground/50">
+            Ảnh sẽ được tải lên Cloudinary khi bạn bấm đăng bài.
+          </p>
         </section>
       )}
 
@@ -192,6 +256,12 @@ export default function RescueFormProvider() {
             <li><b>Hết hạn:</b> {form.expiryDate}</li>
           </ul>
         </section>
+      )}
+
+      {(error || success) && (
+        <div className={`mt-6 rounded-xl px-4 py-3 text-sm ${error ? "bg-red-50 text-red-700 border border-red-200" : "bg-green-50 text-green-700 border border-green-200"}`}>
+          {error || success}
+        </div>
       )}
 
       {/* ACTIONS */}
@@ -215,9 +285,11 @@ export default function RescueFormProvider() {
         ) : (
           <button
             onClick={handleSubmit}
-            className="px-6 py-3 rounded-xl bg-orange-primary text-white"
+            disabled={isSubmitting}
+            className="px-6 py-3 rounded-xl bg-orange-primary text-white disabled:opacity-70 flex items-center gap-2"
           >
-            Đăng bài
+            {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : null}
+            {isSubmitting ? "Đang đăng..." : "Đăng bài"}
           </button>
         )}
       </div>
