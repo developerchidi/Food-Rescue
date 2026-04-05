@@ -16,6 +16,7 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
 
   const successMessage = searchParams.get("success");
+  const reason = searchParams.get("reason");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,6 +57,12 @@ function LoginForm() {
       {successMessage && (
         <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 text-mint-darker rounded-2xl text-sm font-bold">
           Đăng ký thành công! Hãy đăng nhập ngay.
+        </div>
+      )}
+
+      {reason === "expired" && (
+        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-2xl text-sm font-bold">
+          Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.
         </div>
       )}
 
