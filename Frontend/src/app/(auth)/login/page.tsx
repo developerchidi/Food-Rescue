@@ -16,7 +16,6 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
 
   const successMessage = searchParams.get("success");
-  const reason = searchParams.get("reason");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,12 +59,6 @@ function LoginForm() {
         </div>
       )}
 
-      {reason === "expired" && (
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-2xl text-sm font-bold">
-          Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.
-        </div>
-      )}
-
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-bold">
           {error}
@@ -93,7 +86,6 @@ function LoginForm() {
               <Mail size={20} />
             </div>
             <input
-              data-testid="login-email"
               name="email"
               type="email"
               placeholder="ten@ví-dụ.com"
@@ -110,7 +102,6 @@ function LoginForm() {
               <Lock size={20} />
             </div>
             <input
-              data-testid="login-password"
               name="password"
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
@@ -133,7 +124,6 @@ function LoginForm() {
         </div>
 
         <button
-          data-testid="login-submit"
           type="submit"
           disabled={loading}
           className="w-full h-14 bg-mint-darker text-white font-black rounded-2xl shadow-xl shadow-mint-darker/20 hover:shadow-2xl hover:shadow-mint-darker/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"

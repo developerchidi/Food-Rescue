@@ -1,6 +1,5 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import Link from "next/link";
 import { Store, TrendingUp, Heart, CheckCircle2, Users, Award, BarChart3, Shield, UserPlus, PlusCircle, Truck } from "lucide-react";
 
 export default function PartnersPage() {
@@ -159,12 +158,9 @@ export default function PartnersPage() {
             <p className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
               Tham gia cùng chúng tôi ngay hôm nay và trở thành một phần của cộng đồng Food Rescue.
             </p>
-            <Link
-              href="/merchant/dashboard"
-              className="inline-block px-12 py-5 bg-white text-mint-darker font-black rounded-2xl hover:bg-mint-light transition-all shadow-xl active:scale-95 text-lg"
-            >
-              Mở Merchant Dashboard
-            </Link>
+            <button className="px-12 py-5 bg-white text-mint-darker font-black rounded-2xl hover:bg-mint-light transition-all shadow-xl active:scale-95 text-lg">
+              Bắt đầu hợp tác ngay
+            </button>
           </section>
         </div>
       </div>
