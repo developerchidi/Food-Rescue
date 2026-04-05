@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import RegisterPage from "@/app/(auth)/register/page";
 
 const pushMock = jest.fn();
+const originalFetch = global.fetch;
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -12,6 +13,15 @@ jest.mock("next/navigation", () => ({
 describe("RegisterPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    if (originalFetch) {
+      global.fetch = originalFetch;
+      return;
+    }
+
+    delete (global as typeof globalThis & { fetch?: typeof fetch }).fetch;
   });
 
   it("submits register successfully and redirects to login page", async () => {
@@ -74,6 +84,29 @@ describe("RegisterPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /Bắt đầu hành trình/i }));
 
     expect(await screen.findByText("Email này đã được sử dụng")).toBeInTheDocument();
+    expect(pushMock).not.toHaveBeenCalled();
+  });
+
+  it("shows system error when register request throws", async () => {
+    global.fetch = jest.fn().mockRejectedValue(new Error("Đã xảy ra lỗi hệ thống")) as unknown as typeof fetch;
+
+    render(<RegisterPage />);
+
+    fireEvent.change(screen.getByPlaceholderText("Nguyễn Văn A"), {
+      target: { value: "Nguyen Van C" },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText("ten@ví-dụ.com"), {
+      target: { value: "network@example.com" },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText("••••••••"), {
+      target: { value: "12345678" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Bắt đầu hành trình/i }));
+
+    expect(await screen.findByText("Đã xảy ra lỗi hệ thống")).toBeInTheDocument();
     expect(pushMock).not.toHaveBeenCalled();
   });
 });

@@ -70,6 +70,7 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
 
         <div className="flex items-center justify-between py-1 border-b border-slate-100">
           <button
+            data-testid="rescue-quantity-decrease"
             type="button"
             onClick={handleDecrement}
             disabled={quantity <= 1}
@@ -81,6 +82,7 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
             {quantity}
           </div>
           <button
+            data-testid="rescue-quantity-increase"
             type="button"
             onClick={handleIncrement}
             disabled={quantity >= post.quantity}
@@ -100,6 +102,7 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
             { id: "DELIVERY", label: "Giao tận nhà", icon: Truck }
           ].map((opt) => (
             <button
+              data-testid={`rescue-method-${opt.id.toLowerCase()}`}
               key={opt.id}
               type="button"
               onClick={() => setMethod(opt.id as any)}
@@ -158,6 +161,7 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
         )}
 
         <button
+          data-testid="rescue-confirm-submit"
           onClick={handleConfirm}
           disabled={isSubmitting}
           className="w-full h-14 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] rounded-xl hover:bg-slate-800 active:scale-[0.98] transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-xl shadow-slate-900/10"
