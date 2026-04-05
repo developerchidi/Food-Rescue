@@ -2,17 +2,16 @@
 
 import { auth } from "@/auth"; // Đường dẫn auth có thể thay đổi tùy config, check lại nếu lỗi
 import { fetchFromBackend } from "@/lib/proxy";
-import { CreateFoodPostSchema } from "@/lib/validators/posts";
 import { revalidatePath } from "next/cache";
 
 export type ActionState = {
   success: boolean;
   message?: string;
-  fieldErrors?: Record<string, string[] | undefined>;
+  fieldErrors?: Record<string, string[]>;
   data?: any;
 };
 
-export async function createFoodPost(data: unknown): Promise<ActionState> {
+export async function createFoodPost(data: any): Promise<ActionState> {
   const session = await auth();
 
   // 1. Check Auth & Role
@@ -20,45 +19,29 @@ export async function createFoodPost(data: unknown): Promise<ActionState> {
     return { success: false, message: "Bạn chưa đăng nhập." };
   }
 
-  const parsed = CreateFoodPostSchema.safeParse(data);
-  if (!parsed.success) {
-    return {
-      success: false,
-      message: "Dữ liệu không hợp lệ.",
-      fieldErrors: parsed.error.flatten().fieldErrors,
-    };
-  }
-
-  const body = parsed.data;
-
   try {
+    // 2. Call Service via API
     const post = await fetchFromBackend("/posts", {
       method: "POST",
       body: JSON.stringify({
-        title: body.title,
-        description: body.description,
-        type: body.type,
-        originalPrice: body.originalPrice ?? 0,
-        rescuePrice: body.rescuePrice ?? 0,
-        quantity: body.quantity,
-        expiryDate: body.expiryDate,
-        imageUrl: body.imageUrl,
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        originalPrice: data.originalPrice || 0,
+        rescuePrice: data.rescuePrice || 0,
+        quantity: data.quantity,
+        expiryDate: data.expiryDate,
+        imageUrl: data.imageUrl,
       }),
     });
 
+    // 3. Revalidate & Return
     revalidatePath("/marketplace");
-    revalidatePath("/manage/posts");
+    revalidatePath("/manage/posts"); // Giả định route quản lý
 
     return { success: true, message: "Đăng bài thành công!", data: post };
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("CREATE_POST_ERROR:", error);
-    const err = error as Error & {
-      fieldErrors?: Record<string, string[] | undefined>;
-    };
-    return {
-      success: false,
-      message: err.message || "Lỗi hệ thống khi tạo bài đăng.",
-      fieldErrors: err.fieldErrors,
-    };
+    return { success: false, message: error.message || "Lỗi hệ thống khi tạo bài đăng." };
   }
 }

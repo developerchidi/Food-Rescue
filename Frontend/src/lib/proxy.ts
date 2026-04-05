@@ -19,27 +19,13 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
 
   if (!response.ok) {
     let errorMessage = "API Client Error";
-    let fieldErrors: Record<string, string[] | undefined> | undefined;
     try {
-      const errBody = (await response.json()) as {
-        error?: string;
-        message?: string;
-        fieldErrors?: Record<string, string[] | undefined>;
-      };
+      const errBody = await response.json();
       errorMessage = errBody.error || errBody.message || errorMessage;
-      if (errBody.fieldErrors) {
-        fieldErrors = errBody.fieldErrors;
-      }
     } catch {
       errorMessage = response.statusText;
     }
-    const err = new Error(errorMessage) as Error & {
-      fieldErrors?: Record<string, string[] | undefined>;
-      status?: number;
-    };
-    err.fieldErrors = fieldErrors;
-    err.status = response.status;
-    throw err;
+    throw new Error(errorMessage);
   }
 
   // Handle empty responses
