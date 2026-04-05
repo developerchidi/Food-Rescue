@@ -19,63 +19,26 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "py-3" : "py-6"}`}
-      aria-label="Main navigation"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "py-3" : "py-6"
+        }`}
     >
       <div className="container mx-auto px-6">
         <div className="glass-nav rounded-3xl px-8 py-3 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-2xl font-bold tracking-tight text-sage focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
-          >
+          <Link href="/" className="text-2xl font-bold tracking-tight text-sage">
             Food<span className="text-mint-primary">Rescue</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-10">
-            <Link
-              href="/"
-              className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
-            >
+            <Link href="/" className="text-[15px] font-medium hover:text-mint-primary transition-colors">
               Trang chủ
             </Link>
-            <Link
-              href="/marketplace"
-              className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
-            >
+            <Link href="/marketplace" className="text-[15px] font-medium hover:text-mint-primary transition-colors">
               Khám phá
             </Link>
-            <Link
-              href="/orders"
-              className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
-            >
+            <Link href="/orders" className="text-[15px] font-medium hover:text-mint-primary transition-colors">
               Đơn hàng
             </Link>
-            {session?.user?.role === "DONOR" && (
-              <>
-                <Link
-                  href="/merchant/dashboard"
-                  className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
-                >
-                  Merchant
-                </Link>
-                <Link
-                  href="/merchant/posts"
-                  className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
-                >
-                  Bài đăng
-                </Link>
-              </>
-            )}
-            <Link
-              href="/profile"
-              className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
-            >
-              Profile
-            </Link>
-            <Link
-              href="/#map"
-              className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
-            >
+            <Link href="/#map" className="text-[15px] font-medium hover:text-mint-primary transition-colors">
               Bản đồ
             </Link>
           </div>
@@ -83,10 +46,7 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             {status === "authenticated" ? (
               <div className="flex items-center gap-4">
-                <div
-                  className="flex items-center gap-2 px-4 py-2 bg-mint-primary/10 rounded-2xl border border-mint-primary/20"
-                  aria-label="User profile"
-                >
+                <div className="flex items-center gap-2 px-4 py-2 bg-mint-primary/10 rounded-2xl border border-mint-primary/20">
                   <div className="w-8 h-8 rounded-full bg-mint-darker flex items-center justify-center text-white">
                     <User size={18} />
                   </div>
@@ -96,9 +56,8 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={() => signOut()}
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-foreground/40 hover:bg-red-50 hover:text-red-500 transition-all active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-foreground/40 hover:bg-red-50 hover:text-red-500 transition-all active:scale-95"
                   title="Đăng xuất"
-                  aria-label="Sign out"
                 >
                   <LogOut size={20} />
                 </button>
@@ -106,8 +65,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="text-[15px] font-bold px-8 py-3 bg-[#009975] text-white rounded-full hover:shadow-lg hover:shadow-[#009975]/20 transition-all active:scale-95 flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#009975]"
-                aria-label="Log in"
+                className="text-[15px] font-bold px-8 py-3 bg-[#009975] text-white rounded-full hover:shadow-lg hover:shadow-[#009975]/20 transition-all active:scale-95 flex items-center justify-center"
               >
                 Đăng nhập
               </Link>

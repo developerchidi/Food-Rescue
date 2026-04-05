@@ -10,7 +10,6 @@ export const RegisterSchema = z.object({
     }),
   email: EmailSchema,
   password: PasswordSchema,
-  registerAsMerchant: z.boolean().optional().default(false),
 });
 
 export type RegisterInput = z.infer<typeof RegisterSchema>;

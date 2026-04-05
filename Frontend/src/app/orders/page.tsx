@@ -1,33 +1,11 @@
 import { auth } from "@/auth";
-import { BackendApiError, fetchFromBackend } from "@/lib/proxy";
+import { fetchFromBackend } from "@/lib/proxy";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Clock, ChevronRight, Package, QrCode, ShoppingBag, TriangleAlert, RefreshCcw } from "lucide-react";
-
-function getOrdersErrorMessage(error: unknown): string {
-  if (error instanceof BackendApiError) {
-    if (error.status >= 500) {
-      return "Máy chủ đang bận. Vui lòng thử lại sau ít phút.";
-    }
-
-    if (error.status === 404) {
-      return "Không tìm thấy dữ liệu đơn hàng.";
-    }
-
-    if (error.message && error.message !== "API Client Error") {
-      return error.message;
-    }
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return "Không thể tải danh sách đơn hàng lúc này.";
-}
+import { MapPin, Clock, ChevronRight, Package, QrCode, ShoppingBag } from "lucide-react";
 
 export default async function OrdersPage() {
   const session = await auth();
@@ -36,19 +14,7 @@ export default async function OrdersPage() {
     redirect("/login");
   }
 
-  let orders: any[] = [];
-  let ordersError: string | null = null;
-
-  try {
-    const result = await fetchFromBackend("/donations/my-orders");
-    orders = Array.isArray(result) ? result : [];
-  } catch (error) {
-    if (error instanceof BackendApiError && (error.status === 401 || error.status === 403)) {
-      redirect("/login?reason=expired&next=/orders");
-    }
-
-    ordersError = getOrdersErrorMessage(error);
-  }
+  const orders: any[] = await fetchFromBackend("/donations/my-orders") || [];
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
@@ -57,7 +23,7 @@ export default async function OrdersPage() {
       <main className="flex-grow pt-32 pb-24 relative z-10">
         <div className="container mx-auto px-6">
           <header className="mb-16 space-y-4">
-            <h1 data-testid="orders-title" className="text-5xl font-black text-slate-900 tracking-tighter italic">
+            <h1 className="text-5xl font-black text-slate-900 tracking-tighter italic">
               Đơn hàng <span className="text-mint-primary">của tôi</span>
             </h1>
             <p className="text-base font-medium text-slate-500 leading-relaxed max-w-xl italic">
@@ -65,32 +31,7 @@ export default async function OrdersPage() {
             </p>
           </header>
 
-          {ordersError ? (
-            <div className="py-20 px-6 max-w-2xl mx-auto text-center bg-red-50/60 border border-red-100 rounded-3xl space-y-5 animate-in fade-in duration-500">
-              <div className="w-16 h-16 mx-auto rounded-full bg-white border border-red-100 flex items-center justify-center text-red-500">
-                <TriangleAlert size={28} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-black text-slate-900">Không thể tải đơn hàng</h3>
-                <p className="text-sm font-semibold text-slate-500">{ordersError}</p>
-              </div>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Link
-                  href="/orders"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-[0.15em] hover:bg-slate-800 transition-colors"
-                >
-                  <RefreshCcw size={14} />
-                  Tải lại
-                </Link>
-                <Link
-                  href="/marketplace"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl text-xs font-black uppercase tracking-[0.15em] hover:bg-slate-50 transition-colors"
-                >
-                  Về Marketplace
-                </Link>
-              </div>
-            </div>
-          ) : orders.length === 0 ? (
+          {orders.length === 0 ? (
             <div className="py-24 text-center space-y-6 animate-in fade-in duration-700">
               <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto">
                 <ShoppingBag size={32} className="text-slate-200" />
@@ -111,7 +52,6 @@ export default async function OrdersPage() {
               {orders.map((order) => (
                 <div
                   key={order.id}
-                  data-testid={`order-card-${order.id}`}
                   className="group relative bg-white border border-slate-100 rounded-3xl p-6 lg:p-8 flex flex-col lg:flex-row lg:items-center gap-8 hover:border-mint-primary/30 hover:shadow-2xl hover:shadow-mint-primary/5 transition-all duration-500"
                 >
                   {/* Product Image */}
@@ -131,7 +71,7 @@ export default async function OrdersPage() {
                   <div className="flex-grow space-y-6">
                     <div className="space-y-2">
                       <div className="flex flex-wrap items-center gap-3">
-                        <h2 data-testid={`order-title-${order.id}`} className="text-2xl font-black text-slate-900 tracking-tight group-hover:text-mint-darker transition-colors lowercase first-letter:uppercase">
+                        <h2 className="text-2xl font-black text-slate-900 tracking-tight group-hover:text-mint-darker transition-colors lowercase first-letter:uppercase">
                           {order.post.title}
                         </h2>
                         <span className="px-2 py-0.5 bg-slate-900 text-white rounded text-[8px] font-black uppercase tracking-widest italic">

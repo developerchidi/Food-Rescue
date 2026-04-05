@@ -1,9 +1,9 @@
-import NextAuth, { getServerSession, type NextAuthOptions } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import NextAuth from "next-auth"
+import Credentials from "next-auth/providers/credentials"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       name: "Credentials",
@@ -12,13 +12,13 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) return null
 
         try {
           const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
-            method: "POST",
+            method: 'POST',
             body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" }
           });
 
           const data = await res.json();
@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
               email: data.user.email,
               role: data.user.role,
               accessToken: data.token,
-            };
+            }
           }
           return null;
         } catch (e) {
@@ -43,31 +43,28 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
-        token.accessToken = user.accessToken;
+        token.role = (user as any).role
+        token.accessToken = (user as any).accessToken;
         token.sub = user.id;
       }
-      return token;
+      return token
     },
     async session({ session, token }) {
       if (token.sub && session.user) {
-        session.user.id = token.sub;
+        session.user.id = token.sub
       }
       if (token.role && session.user) {
-        session.user.role = token.role as string;
+        (session.user as any).role = token.role
       }
       if (token.accessToken) {
-        session.accessToken = token.accessToken as string;
+        (session as any).accessToken = token.accessToken;
       }
-      return session;
+      return session
     },
   },
   pages: {
     signIn: "/login",
   },
+  secret: process.env.NEXTAUTH_SECRET || "development-secret",
   session: { strategy: "jwt" },
-};
-
-export async function auth() {
-  return getServerSession(authOptions);
-}
+})

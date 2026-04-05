@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Minus, Plus, ShoppingCart, Loader2, MapPin, Truck } from "lucide-react";
 import { rescueFood } from "@/lib/actions/rescue";
-import {
-  createCheckoutHold,
-  releaseCheckoutHold,
-} from "@/actions/reservation-actions";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface RescueConfirmFormProps {
   post: any;
@@ -20,54 +17,7 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [holdReady, setHoldReady] = useState(false);
-  const [holdLoading, setHoldLoading] = useState(true);
-  const holdIdRef = useRef<string | null>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    let disposed = false;
-
-    (async () => {
-      setHoldLoading(true);
-      setHoldReady(false);
-      const prevId = holdIdRef.current;
-      if (prevId) {
-        await releaseCheckoutHold(prevId);
-        if (disposed) {
-          return;
-        }
-        holdIdRef.current = null;
-      }
-
-      const r = await createCheckoutHold(post.id, quantity);
-      if (disposed) {
-        if ("holdId" in r) {
-          await releaseCheckoutHold(r.holdId);
-        }
-        return;
-      }
-
-      if ("error" in r) {
-        setError(r.error);
-        setHoldReady(false);
-      } else {
-        holdIdRef.current = r.holdId;
-        setHoldReady(true);
-        setError(null);
-      }
-      setHoldLoading(false);
-    })();
-
-    return () => {
-      disposed = true;
-      const id = holdIdRef.current;
-      holdIdRef.current = null;
-      if (id) {
-        void releaseCheckoutHold(id);
-      }
-    };
-  }, [quantity, post.id]);
 
   const discount = post.originalPrice && post.rescuePrice
     ? Math.round(((post.originalPrice - post.rescuePrice) / post.originalPrice) * 100)
@@ -91,23 +41,10 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
       return;
     }
 
-    const activeHold = holdIdRef.current;
-    if (!activeHold || !holdReady) {
-      setError("Đang giữ chỗ hoặc chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
-      return;
-    }
-
     setIsSubmitting(true);
     setError(null);
 
-    const result = await rescueFood(
-      post.id,
-      quantity,
-      method,
-      address,
-      phone,
-      activeHold
-    );
+    const result = await rescueFood(post.id, quantity, method, address, phone);
 
     if (result.error) {
       setError(result.error);
@@ -122,16 +59,6 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
       <div className="space-y-1">
         <h3 className="text-lg font-black text-slate-900 tracking-tight">Xác nhận Đơn hàng</h3>
         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Hoàn tất bước giải cứu</p>
-        {holdLoading && (
-          <p className="text-[10px] font-bold text-slate-400 pt-1">
-            Đang giữ chỗ suất cho bạn (5–10 phút)…
-          </p>
-        )}
-        {!holdLoading && holdReady && (
-          <p className="text-[10px] font-bold text-emerald-600 pt-1">
-            Đã giữ chỗ — hoàn tất trong thời gian hiển thị để không mất suất.
-          </p>
-        )}
       </div>
 
       {/* Simplified Quantity */}
@@ -143,7 +70,6 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
 
         <div className="flex items-center justify-between py-1 border-b border-slate-100">
           <button
-            data-testid="rescue-quantity-decrease"
             type="button"
             onClick={handleDecrement}
             disabled={quantity <= 1}
@@ -155,7 +81,6 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
             {quantity}
           </div>
           <button
-            data-testid="rescue-quantity-increase"
             type="button"
             onClick={handleIncrement}
             disabled={quantity >= post.quantity}
@@ -175,7 +100,6 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
             { id: "DELIVERY", label: "Giao tận nhà", icon: Truck }
           ].map((opt) => (
             <button
-              data-testid={`rescue-method-${opt.id.toLowerCase()}`}
               key={opt.id}
               type="button"
               onClick={() => setMethod(opt.id as any)}
@@ -234,12 +158,11 @@ export default function RescueConfirmForm({ post }: RescueConfirmFormProps) {
         )}
 
         <button
-          data-testid="rescue-confirm-submit"
           onClick={handleConfirm}
-          disabled={isSubmitting || holdLoading || !holdReady}
+          disabled={isSubmitting}
           className="w-full h-14 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] rounded-xl hover:bg-slate-800 active:scale-[0.98] transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-xl shadow-slate-900/10"
         >
-          {isSubmitting || holdLoading ? (
+          {isSubmitting ? (
             <Loader2 size={16} className="animate-spin" />
           ) : (
             <>

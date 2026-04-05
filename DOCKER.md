@@ -106,8 +106,6 @@ docker-compose exec app npx prisma db seed
 docker exec -it <container-id> npx prisma db seed
 ```
 
-The Prisma seed script creates demo users with email `*@example.com` (including `admin@example.com`); the shared password is **`password123`**. Manual QA accounts in `qa/manual/test-data.md` use `*.foodrescue.test` with **`Test@1234`** and are not created by this seed.
-
 ## 🛠️ Development Workflow
 
 ### Viewing Logs
@@ -236,60 +234,6 @@ NEXTAUTH_URL=https://yourdomain.com
 DATABASE_URL=<production-database-url>
 AUTH_SECRET=<strong-random-secret>
 ```
-
-## Production deploy runbook (monorepo)
-
-Use this checklist when shipping a new version to staging or production. Jira: **N11CT2-70**.
-
-### 1. Clone and submodules
-
-```bash
-git clone https://github.com/developerchidi/Food-Rescue.git
-cd Food-Rescue
-git submodule update --init --recursive
-```
-
-Confirm the backend folder matches `docker-compose.yml` (`./backend` build context). On case-sensitive hosts, the directory name must match that path.
-
-### 2. Environment files
-
-| Location | Purpose |
-| -------- | ------- |
-| Repository root `.env` | Backend: `DATABASE_URL`, `JWT_SECRET`, mail/Redis if used by API |
-| `Frontend/.env` | Next.js / Auth: `AUTH_SECRET`, `NEXTAUTH_URL`, Cloudinary, `NEXT_PUBLIC_*` |
-
-Never commit real secrets; load the same keys in your host or CI/CD secret store.
-
-### 3. Database migrations (order matters)
-
-Apply Prisma migrations **before** switching live traffic to new API containers.
-
-```bash
-docker compose build backend
-docker compose run --rm backend npx prisma migrate deploy
-```
-
-If you use a one-off container instead of Compose, run `npx prisma migrate deploy` inside the backend image with `DATABASE_URL` set.
-
-### 4. Build and start stack
-
-```bash
-docker compose up -d --build
-```
-
-### 5. Smoke checks
-
-- Frontend: open `http://localhost:3000` (or your public URL).
-- Backend health (when exposed on host port `3001`): `curl -sf http://localhost:3001/health` should return JSON with `status: "ok"`.
-- Create/login flow against staging before promoting to production.
-
-### 6. Rollback
-
-Keep previous image tags in your registry. To roll back, redeploy the last known-good tags for `frontend` and `backend` and re-run `prisma migrate deploy` only if the new release had migrations (avoid downgrading schema without a planned migration).
-
-### 7. CI reference
-
-Pull requests against `main` / `develop` run the GitHub Actions workflow in `.github/workflows/ci.yml` (Frontend lint, typecheck, build). Fix CI on the branch before merging.
 
 ## 🔐 Security Best Practices
 
