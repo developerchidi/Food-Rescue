@@ -9,7 +9,8 @@ export async function rescueFood(
   quantity: number,
   fulfillmentMethod: "PICKUP" | "DELIVERY" = "PICKUP",
   address?: string,
-  phone?: string
+  phone?: string,
+  holdId?: string
 ) {
   const session = await auth();
 
@@ -26,6 +27,7 @@ export async function rescueFood(
         fulfillmentMethod,
         address,
         phone,
+        ...(holdId ? { holdId } : {}),
       })
     });
 
