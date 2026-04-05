@@ -1,7 +1,7 @@
 "use client";
 
 import AuthLayout from "@/components/features/auth/AuthLayout";
-import { User, Mail, Lock, ArrowRight } from "lucide-react";
+import { User, Mail, Lock, ArrowRight, Store } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -20,18 +20,19 @@ export default function RegisterPage() {
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const registerAsMerchant = formData.get("registerAsMerchant") === "on";
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, registerAsMerchant }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Đăng ký không thành công");
+        throw new Error(data.error || data.message || "Đăng ký không thành công");
       }
 
       router.push("/login?success=Account created");
@@ -105,6 +106,20 @@ export default function RegisterPage() {
               />
             </div>
           </div>
+
+          <label className="flex items-start gap-3 cursor-pointer rounded-2xl border border-slate-100 bg-white p-4 hover:border-mint-primary/30 transition-colors">
+            <input
+              type="checkbox"
+              name="registerAsMerchant"
+              className="mt-1 h-4 w-4 rounded border-slate-300 text-mint-primary focus:ring-mint-primary"
+            />
+            <span className="flex gap-2 text-left">
+              <Store size={18} className="text-mint-primary shrink-0 mt-0.5" />
+              <span className="text-xs font-bold text-slate-600 leading-snug">
+                Đăng ký với tư cách đối tác / nhà hàng (DONOR) — đăng bán món giải cứu
+              </span>
+            </span>
+          </label>
         </div>
 
         <button
