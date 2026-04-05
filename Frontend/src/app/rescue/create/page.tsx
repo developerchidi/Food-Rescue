@@ -1,22 +1,13 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import RescueForm from "@/components/RescueForm";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function CreateRescuePage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
-
-  if (status === "loading") {
-    return <p>Loading...</p>; // Show loading state
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/login");
   }
 
   return (
