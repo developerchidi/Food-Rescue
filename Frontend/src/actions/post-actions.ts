@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/auth"; // Đường dẫn auth có thể thay đổi tùy config, check lại nếu lỗi
+import { auth } from "@/auth";
 import { fetchFromBackend } from "@/lib/proxy";
 import { CreateFoodPostSchema } from "@/lib/validators/posts";
 import { revalidatePath } from "next/cache";
@@ -9,13 +9,12 @@ export type ActionState = {
   success: boolean;
   message?: string;
   fieldErrors?: Record<string, string[] | undefined>;
-  data?: any;
+  data?: unknown;
 };
 
 export async function createFoodPost(data: unknown): Promise<ActionState> {
   const session = await auth();
 
-  // 1. Check Auth & Role
   if (!session || !session.user || !session.user.id) {
     return { success: false, message: "Bạn chưa đăng nhập." };
   }

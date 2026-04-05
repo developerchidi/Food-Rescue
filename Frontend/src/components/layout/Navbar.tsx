@@ -51,6 +51,12 @@ export default function Navbar() {
               Đơn hàng
             </Link>
             <Link
+              href="/profile"
+              className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
+            >
+              Profile
+            </Link>
+            <Link
               href="/#map"
               className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
             >

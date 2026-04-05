@@ -1,12 +1,13 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import RescueForm from "@/components/RescueForm";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import RescueFormProvider from "./RescueFormProvider";
 
 export default async function CreateRescuePage() {
   const session = await auth();
-  if (!session?.user) {
+
+  if (!session?.user?.id) {
     redirect("/login");
   }
 
@@ -16,7 +17,7 @@ export default async function CreateRescuePage() {
 
       <div className="pt-32 pb-24">
         <div className="max-w-3xl mx-auto px-4">
-          <RescueForm />
+          <RescueFormProvider />
         </div>
       </div>
 
