@@ -1,9 +1,18 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { toast } from 'react-toastify';
 
 const useQRScanner = (qrCodeRegionId, onSuccess, onError) => {
   const html5QrCodeRef = useRef(null);
+
+  const stopScanner = useCallback(() => {
+    const instance = html5QrCodeRef.current;
+    if (instance) {
+      instance.stop().then(() => {
+        instance.clear();
+      });
+    }
+  }, []);
 
   useEffect(() => {
     html5QrCodeRef.current = new Html5Qrcode(qrCodeRegionId);
@@ -34,15 +43,7 @@ const useQRScanner = (qrCodeRegionId, onSuccess, onError) => {
     return () => {
       stopScanner();
     };
-  }, [qrCodeRegionId, onSuccess, onError]);
-
-  const stopScanner = () => {
-    if (html5QrCodeRef.current) {
-      html5QrCodeRef.current.stop().then(() => {
-        html5QrCodeRef.current.clear();
-      });
-    }
-  };
+  }, [qrCodeRegionId, onSuccess, onError, stopScanner]);
 
   return { stopScanner };
 };

@@ -106,6 +106,8 @@ docker-compose exec app npx prisma db seed
 docker exec -it <container-id> npx prisma db seed
 ```
 
+The Prisma seed script creates demo users with email `*@example.com` (including `admin@example.com`); the shared password is **`password123`**. Manual QA accounts in `qa/manual/test-data.md` use `*.foodrescue.test` with **`Test@1234`** and are not created by this seed.
+
 ## 🛠️ Development Workflow
 
 ### Viewing Logs

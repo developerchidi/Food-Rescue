@@ -50,6 +50,22 @@ export default function Navbar() {
             >
               Đơn hàng
             </Link>
+            {session?.user?.role === "DONOR" && (
+              <>
+                <Link
+                  href="/merchant/dashboard"
+                  className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
+                >
+                  Merchant
+                </Link>
+                <Link
+                  href="/merchant/posts"
+                  className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
+                >
+                  Bài đăng
+                </Link>
+              </>
+            )}
             <Link
               href="/profile"
               className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"

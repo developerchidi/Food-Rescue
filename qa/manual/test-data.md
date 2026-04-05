@@ -17,6 +17,7 @@ Cung cap bo test data dung chung cho Dev/QA de chay lai manual test va regressio
 Luu y:
 - Register API hien tai khong nhan role, user moi mac dinh RECEIVER.
 - Can cap nhat role truoc khi test role-based.
+- `Backend/prisma/seed.ts` tao user `*@example.com` (gom `admin@example.com`) voi mat khau **`password123`** — khac bo alias `*.foodrescue.test` + `Test@1234` o bang tren (cac tai khoan do tu tao qua dang ky / SQL).
 
 ### 2.2 SQL cap nhat role (tham khao)
 

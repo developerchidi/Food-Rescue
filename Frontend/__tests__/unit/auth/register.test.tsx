@@ -16,12 +16,7 @@ describe("RegisterPage", () => {
   });
 
   afterEach(() => {
-    if (originalFetch) {
-      global.fetch = originalFetch;
-      return;
-    }
-
-    delete (global as typeof globalThis & { fetch?: typeof fetch }).fetch;
+    global.fetch = originalFetch;
   });
 
   it("submits register successfully and redirects to login page", async () => {
