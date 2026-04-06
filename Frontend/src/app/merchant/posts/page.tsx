@@ -49,6 +49,18 @@ export default async function MerchantPostsPage() {
                 Dashboard
               </Link>
               <Link
+                href="/merchant/orders"
+                className="rounded-full border border-emerald-200 bg-white px-6 py-3 text-sm font-bold text-[#1f2d2a] shadow-sm hover:bg-emerald-50"
+              >
+                Đơn shop
+              </Link>
+              <Link
+                href="/merchant/scan"
+                className="rounded-full border border-emerald-200 bg-white px-6 py-3 text-sm font-bold text-[#1f2d2a] shadow-sm hover:bg-emerald-50"
+              >
+                Quét QR
+              </Link>
+              <Link
                 href="/rescue/create"
                 className="rounded-full bg-[#009975] px-6 py-3 text-sm font-bold text-white shadow-lg hover:shadow-[#009975]/25"
               >

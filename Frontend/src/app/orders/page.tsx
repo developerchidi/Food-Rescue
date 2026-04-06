@@ -5,7 +5,19 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Clock, ChevronRight, Package, QrCode, ShoppingBag, TriangleAlert, RefreshCcw } from "lucide-react";
+import {
+  MapPin,
+  Clock,
+  ChevronRight,
+  Package,
+  QrCode,
+  ShoppingBag,
+  TriangleAlert,
+  RefreshCcw,
+  Truck,
+} from "lucide-react";
+import CancelDonationButton from "@/components/orders/CancelDonationButton";
+import { donationStatusLabel } from "@/lib/donation-status";
 
 function getOrdersErrorMessage(error: unknown): string {
   if (error instanceof BackendApiError) {
@@ -143,8 +155,18 @@ export default async function OrdersPage() {
                           <MapPin size={14} className="text-mint-primary" />
                           <span>{order.post.donor.name}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-50 rounded-md border border-slate-100 italic text-[10px]">
-                          {order.fulfillmentMethod === "DELIVERY" ? "🚚 Giao tận nhà" : "🚶 Tự đến lấy"}
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-50 rounded-md border border-slate-100 text-[10px] font-bold">
+                          {order.fulfillmentMethod === "DELIVERY" ? (
+                            <>
+                              <Truck size={12} className="text-mint-primary shrink-0" />
+                              Giao tận nhà
+                            </>
+                          ) : (
+                            <>
+                              <Package size={12} className="text-mint-primary shrink-0" />
+                              Tự đến lấy
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -166,11 +188,21 @@ export default async function OrdersPage() {
                           <Package size={18} />
                         </div>
                         <div>
-                          <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Trạng thái</p>
+                          <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Trạng thái đơn</p>
                           <div className="flex items-center gap-1.5">
-                            <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${order.fulfillmentMethod === "DELIVERY" ? "bg-orange-400" : "bg-emerald-400"}`} />
-                            <p className={`text-xs font-bold uppercase tracking-tighter ${order.fulfillmentMethod === "DELIVERY" ? "text-orange-600" : "text-emerald-600"}`}>
-                              {order.fulfillmentMethod === "DELIVERY" ? "Đang chờ xác nhận" : "Sẵn sàng nhận hàng"}
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                order.status === "COMPLETED"
+                                  ? "bg-emerald-500"
+                                  : order.status === "CANCELLED"
+                                    ? "bg-slate-300"
+                                    : order.status === "APPROVED"
+                                      ? "animate-pulse bg-sky-500"
+                                      : "animate-pulse bg-amber-400"
+                              }`}
+                            />
+                            <p className="text-xs font-bold uppercase tracking-tighter text-slate-700">
+                              {donationStatusLabel(order.status)}
                             </p>
                           </div>
                         </div>
@@ -179,7 +211,7 @@ export default async function OrdersPage() {
                   </div>
 
                   {/* Action Button */}
-                  <div className="shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-50 flex items-center">
+                  <div className="shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-50 flex flex-col gap-3 items-stretch lg:items-end">
                     <Link
                       href={`/rescue/success/${order.id}`}
                       className="flex items-center justify-center gap-3 w-full lg:w-56 h-14 bg-white border border-slate-200 rounded-2xl text-[10px] font-black text-slate-900 uppercase tracking-[0.15em] hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all group/btn active:scale-95 whitespace-nowrap px-6 shadow-sm shadow-slate-100"
@@ -188,6 +220,9 @@ export default async function OrdersPage() {
                       <span>{order.fulfillmentMethod === "DELIVERY" ? "Chi tiết giao hàng" : "Mã nhận hàng"}</span>
                       <ChevronRight size={14} className="shrink-0 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                     </Link>
+                    {(order.status === "REQUESTED" || order.status === "APPROVED") && (
+                      <CancelDonationButton donationId={order.id} variant="buyer" className="w-full lg:w-56" />
+                    )}
                   </div>
                 </div>
               ))}

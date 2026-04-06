@@ -23,7 +23,6 @@ const useQRScanner = (qrCodeRegionId, onSuccess, onError) => {
           { facingMode: 'environment' },
           { fps: 10, qrbox: { width: 250, height: 250 } },
           (decodedText) => {
-            toast.success('Xác nhận thành công');
             onSuccess(decodedText);
             stopScanner();
           },

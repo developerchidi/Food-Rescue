@@ -3,12 +3,12 @@ import Footer from "@/components/layout/Footer";
 import { auth } from "@/auth";
 import { fetchFromBackend } from "@/lib/proxy";
 import { redirect } from "next/navigation";
-import { HeartHandshake, Wallet, Star } from "lucide-react";
+import Link from "next/link";
+import { HeartHandshake, Wallet } from "lucide-react";
 
 interface MerchantStats {
   totalMealsRescued: number;
   totalRevenue: number;
-  rating: number;
 }
 
 const formatCurrency = (value: number) => {
@@ -43,13 +43,6 @@ export default async function MerchantDashboardPage() {
       accent: "bg-mint-darker",
       glow: "shadow-emerald-100",
     },
-    {
-      title: "Đánh giá",
-      value: stats.rating === 0 ? "Chưa có" : `${stats.rating}/5`,
-      icon: Star,
-      accent: "bg-green-600",
-      glow: "shadow-green-100",
-    },
   ];
 
   return (
@@ -65,9 +58,29 @@ export default async function MerchantDashboardPage() {
             <p className="mt-4 text-base md:text-lg text-[#4f6b62] max-w-2xl">
               Theo dõi tác động và hiệu quả kinh doanh của bạn theo thời gian thực.
             </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/merchant/orders"
+                className="rounded-full border border-emerald-200 bg-white px-5 py-2.5 text-sm font-bold text-[#1f2d2a] shadow-sm hover:bg-emerald-50"
+              >
+                Đơn shop
+              </Link>
+              <Link
+                href="/merchant/scan"
+                className="rounded-full border border-emerald-200 bg-white px-5 py-2.5 text-sm font-bold text-[#1f2d2a] shadow-sm hover:bg-emerald-50"
+              >
+                Quét QR
+              </Link>
+              <Link
+                href="/merchant/posts"
+                className="rounded-full bg-[#009975] px-5 py-2.5 text-sm font-bold text-white shadow-md hover:shadow-[#009975]/25"
+              >
+                Bài đăng
+              </Link>
+            </div>
           </header>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
             {cards.map((card) => (
               <article
                 key={card.title}

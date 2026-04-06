@@ -16,13 +16,19 @@ export const UpdateProfileSchema = z.object({
     .max(100, {
       message: "Họ tên không được vượt quá 100 ký tự.",
     }),
-  phone: z
-    .string()
-    .trim()
-    .regex(/^(0|\+84)(\d{9})$/, {
-      message: "Số điện thoại không hợp lệ.",
-    })
-    .optional(),
+  phone: z.preprocess(
+    (v) =>
+      v === undefined || v === null || (typeof v === "string" && v.trim() === "")
+        ? undefined
+        : v,
+    z
+      .string()
+      .trim()
+      .regex(/^(0|\+84)(\d{9})$/, {
+        message: "Số điện thoại không hợp lệ.",
+      })
+      .optional()
+  ),
   address: z
     .string()
     .trim()

@@ -25,12 +25,16 @@ export async function verifyDonationQR(token: string): Promise<VerifyQRResult> {
   try {
     const data = await fetchFromBackend("/donations/qr/verify", {
       method: "POST",
-      body: JSON.stringify({ token })
+      body: JSON.stringify({ token }),
     });
 
-    // 7. Revalidate
     revalidatePath("/marketplace");
-    revalidatePath("/manage/orders");
+    revalidatePath("/orders");
+    revalidatePath("/merchant/orders");
+    revalidatePath("/merchant/dashboard");
+    if (data && typeof data === "object" && "id" in data) {
+      revalidatePath(`/rescue/success/${String((data as { id: string }).id)}`);
+    }
 
     return {
       success: true,
