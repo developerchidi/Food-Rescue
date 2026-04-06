@@ -245,7 +245,6 @@ export default function MerchantProfileForm({ profile }: MerchantProfileFormProp
               />
               <div className="rounded-2xl border border-dashed border-emerald-300 p-4 hover:bg-emerald-50 transition-colors">
                 {avatarPreview ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- preview blob / external URL
                   <img
                     src={avatarPreview}
                     alt="Avatar"
