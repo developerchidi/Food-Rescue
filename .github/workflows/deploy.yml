@@ -11,10 +11,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create .env file
+      - name: Create Frontend .env for Docker build
+        working-directory: Frontend
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
           echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
+          echo "NEXTAUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
           echo "AUTH_URL=http://157.20.82.3:21011" >> .env
           echo "AUTH_TRUST_HOST=true" >> .env
           echo "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}" >> .env
@@ -28,7 +30,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./Frontend
+          file: ./Frontend/Dockerfile
           push: true
           build-args: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}

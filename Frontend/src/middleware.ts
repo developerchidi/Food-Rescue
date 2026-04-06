@@ -1,20 +1,15 @@
-import { withAuth } from "next-auth/middleware";
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
 
-export default withAuth({
-  pages: {
-    signIn: "/login", // Redirect to /login if not authenticated
-  },
-  callbacks: {
-    authorized: ({ req, token }) => {
-      // Allow access to /login to prevent redirect loop
-      if (req.nextUrl.pathname === "/login") {
-        return true;
-      }
-      return !!token; // Allow access if token exists
-    },
-  },
+export default auth((req) => {
+  if (req.auth) {
+    return NextResponse.next();
+  }
+  const login = new URL("/login", req.url);
+  login.searchParams.set("callbackUrl", req.nextUrl.pathname);
+  return NextResponse.redirect(login);
 });
 
 export const config = {
-  matcher: ["/rescue/create"], // Apply middleware only to /rescue/create
+  matcher: ["/rescue/create"],
 };
