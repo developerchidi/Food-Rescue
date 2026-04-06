@@ -7,15 +7,15 @@ import { Loader2, AlertCircle } from "lucide-react";
 interface FoodPost {
   id: string;
   title: string;
-  description: string;
-  imageUrl: string;
+  description: string | null;
+  imageUrl: string | null;
   type: string;
-  originalPrice: number;
-  rescuePrice: number;
+  originalPrice: number | null;
+  rescuePrice: number | null;
   quantity: number;
   expiryDate: string;
   donor: {
-    name: string;
+    name: string | null;
   };
 }
 
@@ -27,7 +27,7 @@ export default function FoodGallery() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("/api/posts");
+        const response = await fetch("/api/posts", { cache: "no-store" });
         if (!response.ok) throw new Error("Không thể tải danh sách thực phẩm");
         const data = await response.json();
         setPosts(data);
@@ -92,13 +92,13 @@ export default function FoodGallery() {
                 key={post.id}
                 id={post.id}
                 title={post.title}
-                description={post.description}
-                imageUrl={post.imageUrl}
-                originalPrice={post.originalPrice}
-                rescuePrice={post.rescuePrice}
+                description={post.description ?? undefined}
+                imageUrl={post.imageUrl ?? undefined}
+                originalPrice={post.originalPrice ?? 0}
+                rescuePrice={post.rescuePrice ?? 0}
                 quantity={post.quantity}
                 expiryDate={post.expiryDate}
-                donorName={post.donor.name}
+                donorName={post.donor?.name ?? "Người cho"}
                 type={post.type}
               />
             ))}

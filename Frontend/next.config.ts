@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "vcdn1-video.vnexpress.net",
+      },
+      {
+        protocol: "https",
         hostname: "res.cloudinary.com",
       },
     ],

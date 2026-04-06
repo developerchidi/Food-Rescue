@@ -24,7 +24,9 @@ export default async function RescueConfirmPage({ params }: ConfirmPageProps) {
     redirect("/login");
   }
 
-  const post: any = await fetchFromBackend(`/posts/${id}`);
+  const post: any = await fetchFromBackend(`/posts/${id}`, {
+    allowNotFound: true,
+  });
 
   if (!post) {
     notFound();
