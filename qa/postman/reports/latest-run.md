@@ -1,6 +1,7 @@
 # Latest Newman Run
 
-- Date: 2026-04-05
+- Date: 2026-04-06
+- Branch: feature/qa-postman-regression-posts-donations
 - Command:
 
 ```powershell
@@ -8,6 +9,16 @@ npx newman run qa/postman/FoodRescue.postman_collection.json `
   -e qa/postman/FoodRescue.postman_environment.json `
   -r cli,json,junit `
   --reporter-json-export qa/postman/reports/newman-report.json `
+  --reporter-junit-export qa/postman/reports/newman-report.xml
+```
+
+- Summary:
+  - Requests: 20 total, 20 failed
+  - Tests: 20 total, 20 failed
+  - Assertions: 33 total, 33 failed
+  - Root Cause: Backend service not running (docker compose failed - command not found)
+
+- Full Report: See `regression-report.md`
   --reporter-junit-export qa/postman/reports/newman-report.xml
 ```
 
