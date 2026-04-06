@@ -25,11 +25,15 @@ export default function FAQPage() {
       questions: [
         {
           q: "Làm thế nào để đặt mua thực phẩm giải cứu?",
-          a: "Bạn chỉ cần duyệt qua marketplace, chọn món ăn bạn muốn giải cứu, nhấn 'Giải cứu ngay', chọn số lượng và phương thức nhận hàng (tự đến lấy hoặc giao tận nhà), sau đó xác nhận đơn hàng. Bạn sẽ nhận được mã QR để nhận hàng."
+          a: "Bạn chọn món trên marketplace, nhấn «Giải cứu ngay», chọn số lượng và hình thức nhận (tự đến lấy hoặc giao tận nhà), rồi xác nhận. Bạn có mã QR trên màn hình sau đặt hàng; cửa hàng cần duyệt đơn trước, sau đó khi nhận hàng họ mới quét mã để hoàn tất (giao tận nhà: sau khi duyệt bạn mới thấy mã QR để giao nhận)."
         },
         {
           q: "Tôi có thể hủy đơn hàng sau khi đã đặt không?",
-          a: "Bạn có thể hủy đơn hàng trong vòng 30 phút sau khi đặt. Sau thời gian này, vui lòng liên hệ trực tiếp với đối tác hoặc bộ phận hỗ trợ khách hàng của chúng tôi."
+          a: "Trong trang Đơn hàng, bạn có thể hủy khi đơn chưa «Hoàn tất»: cả lúc «Chờ shop duyệt» và «Đã duyệt — chờ quét QR». Số suất được hoàn cho cửa hàng. Sau «Hoàn tất» không hủy trên app được — vui lòng liên hệ đối tác.",
+        },
+        {
+          q: "Cửa hàng xác nhận và hoàn tất đơn ra sao?",
+          a: "Đơn mới là «Chờ shop duyệt». Cửa hàng vào Đơn shop, bấm «Duyệt đơn» khi chấp nhận — đơn chuyển «Đã duyệt — chờ quét QR». Khi khách đến lấy (hoặc giao), dùng «Quét QR» trên mã khách; chỉ quét được sau khi đã duyệt. Quét xong đơn «Hoàn tất». Cửa hàng có thể hủy đơn trước khi hoàn tất.",
         },
         {
           q: "Thực phẩm giải cứu có đảm bảo chất lượng không?",

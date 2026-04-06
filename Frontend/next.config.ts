@@ -26,12 +26,17 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "vcdn1-video.vnexpress.net",
+      },
+      {
+        protocol: "https",
         hostname: "res.cloudinary.com",
       },
     ],
   },
   output: "standalone",
   outputFileTracingRoot: path.join(__dirname),
+  // @ts-ignore - Turbopack root config for newer Next.js versions
   turbopack: {
     root: path.join(__dirname),
   },

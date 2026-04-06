@@ -1,0 +1,678 @@
+﻿{
+  "info": {
+    "name": "Food Rescue API Integration",
+    "_postman_id": "9efb6eb4-c212-4aa6-b865-c8ff3d31fd6d",
+    "description": "Integration/API tests for auth, posts, and donations modules.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('runId')) {",
+          "  pm.collectionVariables.set('runId', Date.now().toString());",
+          "}",
+          "if (!pm.collectionVariables.get('donorEmail')) {",
+          "  pm.collectionVariables.set('donorEmail', `donor_${pm.collectionVariables.get('runId')}@example.com`);",
+          "}",
+          "if (!pm.collectionVariables.get('receiverEmail')) {",
+          "  pm.collectionVariables.set('receiverEmail', `receiver_${pm.collectionVariables.get('runId')}@example.com`);",
+          "}",
+          "if (!pm.collectionVariables.get('intruderEmail')) {",
+          "  pm.collectionVariables.set('intruderEmail', `intruder_${pm.collectionVariables.get('runId')}@example.com`);",
+          "}",
+          "pm.collectionVariables.set('futureIso', new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString());"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Donor - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Donor User\",\n  \"email\": \"{{donorEmail}}\",\n  \"password\": \"{{defaultPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Response has userId', function () {",
+                  "  pm.expect(data).to.have.property('userId');",
+                  "  pm.expect(data.userId).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Receiver - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Receiver User\",\n  \"email\": \"{{receiverEmail}}\",\n  \"password\": \"{{defaultPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Response has userId', function () { pm.expect(data.userId).to.be.a('string'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Intruder - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Intruder User\",\n  \"email\": \"{{intruderEmail}}\",\n  \"password\": \"{{defaultPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Duplicate Donor - Conflict",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Donor User\",\n  \"email\": \"{{donorEmail}}\",\n  \"password\": \"{{defaultPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Has conflict error message', function () { pm.expect(data).to.have.property('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Donor - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{donorEmail}}\",\n  \"password\": \"{{defaultPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.collectionVariables.set('donorToken', data.token);",
+                  "pm.collectionVariables.set('donorId', data.user.id);",
+                  "pm.test('Stores donor token and id', function () {",
+                  "  pm.expect(pm.collectionVariables.get('donorToken')).to.be.a('string');",
+                  "  pm.expect(pm.collectionVariables.get('donorId')).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Receiver - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{receiverEmail}}\",\n  \"password\": \"{{defaultPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.collectionVariables.set('receiverToken', data.token);",
+                  "pm.collectionVariables.set('receiverId', data.user.id);",
+                  "pm.test('Stores receiver token and id', function () {",
+                  "  pm.expect(pm.collectionVariables.get('receiverToken')).to.be.a('string');",
+                  "  pm.expect(pm.collectionVariables.get('receiverId')).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Intruder - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{intruderEmail}}\",\n  \"password\": \"{{defaultPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.collectionVariables.set('intruderToken', data.token);",
+                  "pm.collectionVariables.set('intruderId', data.user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Wrong Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{donorEmail}}\",\n  \"password\": \"wrong-password\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', function () { pm.response.to.have.status(401); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Error exists', function () { pm.expect(data).to.have.property('error'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Get Available Posts - Public",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/posts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Response is array', function () { pm.expect(data).to.be.an('array'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Post - Unauthorized",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Combo chieu con han\",\n  \"description\": \"Com + ga + rau\",\n  \"type\": \"INDIVIDUAL\",\n  \"originalPrice\": 120000,\n  \"rescuePrice\": 60000,\n  \"quantity\": 5,\n  \"expiryDate\": \"{{futureIso}}\",\n  \"imageUrl\": \"https://example.com/post.jpg\"\n}"
+            },
+            "url": "{{baseUrl}}/api/posts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Post - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Combo chieu con han\",\n  \"description\": \"Com + ga + rau\",\n  \"type\": \"INDIVIDUAL\",\n  \"originalPrice\": 120000,\n  \"rescuePrice\": 60000,\n  \"quantity\": 2,\n  \"expiryDate\": \"{{futureIso}}\",\n  \"imageUrl\": \"https://example.com/post.jpg\"\n}"
+            },
+            "url": "{{baseUrl}}/api/posts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.collectionVariables.set('postId', data.id);",
+                  "pm.test('Post schema basic', function () {",
+                  "  pm.expect(data).to.have.property('id');",
+                  "  pm.expect(data).to.have.property('donorId');",
+                  "  pm.expect(data).to.have.property('status');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Post - Invalid Payload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"missing title\",\n  \"type\": \"INDIVIDUAL\",\n  \"quantity\": 1,\n  \"expiryDate\": \"{{futureIso}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/posts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Post By ID - Success",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/posts/{{postId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Post id matches', function () { pm.expect(data.id).to.eql(pm.collectionVariables.get('postId')); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Donations",
+      "item": [
+        {
+          "name": "Create Donation - Unauthorized",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"postId\": \"{{postId}}\",\n  \"quantity\": 1,\n  \"fulfillmentMethod\": \"PICKUP\"\n}"
+            },
+            "url": "{{baseUrl}}/api/donations"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Donation - Validation Fail (Delivery Missing Info)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{receiverToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"postId\": \"{{postId}}\",\n  \"quantity\": 1,\n  \"fulfillmentMethod\": \"DELIVERY\"\n}"
+            },
+            "url": "{{baseUrl}}/api/donations"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Field errors exist', function () { pm.expect(data).to.have.property('fieldErrors'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Donation - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{receiverToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"postId\": \"{{postId}}\",\n  \"quantity\": 1,\n  \"fulfillmentMethod\": \"PICKUP\"\n}"
+            },
+            "url": "{{baseUrl}}/api/donations"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.collectionVariables.set('donationId', data.id);",
+                  "pm.collectionVariables.set('qrToken', data.qrCode);",
+                  "pm.test('Donation schema basic', function () {",
+                  "  pm.expect(data).to.have.property('id');",
+                  "  pm.expect(data).to.have.property('postId');",
+                  "  pm.expect(data).to.have.property('receiverId');",
+                  "  pm.expect(data).to.have.property('status');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Donation - Conflict/Oversell",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{receiverToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"postId\": \"{{postId}}\",\n  \"quantity\": 9999,\n  \"fulfillmentMethod\": \"PICKUP\"\n}"
+            },
+            "url": "{{baseUrl}}/api/donations"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Conflict message exists', function () { pm.expect(data).to.have.property('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Donation Detail - Forbidden for Intruder",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{intruderToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/donations/{{donationId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Forbidden error exists', function () { pm.expect(data.error).to.eql('Forbidden'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify QR - Receiver Role Should Fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{receiverToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{qrToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/donations/qr/verify"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Permission error exists', function () { pm.expect(data).to.have.property('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify QR - Donor Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{qrToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/donations/qr/verify"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "var data = {}; try { data = pm.response.json(); } catch (e) {}",
+                  "pm.test('Donation marked completed', function () { pm.expect(data.status).to.eql('COMPLETED'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "defaultPassword",
+      "value": "Password123"
+    }
+  ]
+}
+
+

@@ -1,4 +1,4 @@
-import { fetchFromBackend } from "@/lib/proxy";
+import { BackendApiError, fetchFromBackend } from "@/lib/proxy";
 import { notFound } from "next/navigation";
 import QRCodeDisplay from "@/components/features/marketplace/QRCodeDisplay";
 import { CheckCircle2, MapPin, Clock, ArrowLeft, Phone, Info, Truck } from "lucide-react";
@@ -24,16 +24,47 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
     redirect("/login");
   }
 
-  const donation = await fetchFromBackend(`/donations/${id}`);
+  let donation: Awaited<ReturnType<typeof fetchFromBackend>>;
+  try {
+    donation = await fetchFromBackend(`/donations/${id}`);
+  } catch (err) {
+    if (
+      err instanceof BackendApiError &&
+      (err.status === 403 || err.status === 404)
+    ) {
+      notFound();
+    }
+    throw err;
+  }
 
   if (!donation) {
     notFound();
   }
 
-  // Security Check: Only the receiver can view their success page
-  if (donation.receiverId !== session.user.id) {
+  const d = donation as {
+    viewerIsReceiver?: boolean;
+    status?: string;
+    fulfillmentMethod?: string;
+    qrCode?: string | null;
+    id?: string;
+    post?: {
+      title?: string;
+      imageUrl?: string | null;
+      rescuePrice?: number | null;
+      expiryDate?: string;
+      donor?: { name?: string | null };
+    };
+    quantity?: number;
+    deliveryAddress?: string | null;
+    deliveryPhone?: string | null;
+  };
+
+  if (!d.viewerIsReceiver) {
     notFound();
   }
+
+  const status = d.status ?? "REQUESTED";
+  const isPickup = d.fulfillmentMethod === "PICKUP";
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
@@ -70,16 +101,16 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
                 <div className="flex gap-6 p-6 rounded-2xl bg-slate-50 border border-slate-100 group">
                   <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-white border border-slate-200 shrink-0">
                     <Image
-                      src={donation.post.imageUrl || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop"}
-                      alt={donation.post.title}
+                      src={d.post?.imageUrl || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop"}
+                      alt={d.post?.title ?? "Món ăn"}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
                   <div className="flex-grow py-1 space-y-1">
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight">{donation.post.title}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Số lượng: <span className="text-slate-900">{donation.quantity} suất</span></p>
-                    <p className="text-sm font-black text-mint-darker italic pt-2">{(donation.post.rescuePrice! * donation.quantity).toLocaleString()}đ</p>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">{d.post?.title}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Số lượng: <span className="text-slate-900">{d.quantity} suất</span></p>
+                    <p className="text-sm font-black text-mint-darker italic pt-2">{((d.post?.rescuePrice ?? 0) * (d.quantity ?? 1)).toLocaleString()}đ</p>
                   </div>
                 </div>
 
@@ -90,7 +121,7 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
                     <div className="flex items-start gap-3">
                       <MapPin size={18} className="text-mint-primary mt-0.5" />
                       <div className="space-y-1">
-                        <p className="text-sm font-black text-slate-900 leading-tight">{donation.post.donor.name}</p>
+                        <p className="text-sm font-black text-slate-900 leading-tight">{d.post?.donor?.name}</p>
                         <p className="text-[11px] font-bold text-slate-400">Vui lòng kiểm tra địa chỉ trên bản đồ trước khi đi.</p>
                       </div>
                     </div>
@@ -101,7 +132,9 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
                       <Clock size={18} className="text-mint-primary mt-0.5" />
                       <div className="space-y-1">
                         <p className="text-sm font-black text-slate-900 leading-tight">
-                          {new Date(donation.post.expiryDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(donation.post.expiryDate).toLocaleDateString('vi-VN')}
+                          {d.post?.expiryDate
+                            ? `${new Date(d.post.expiryDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • ${new Date(d.post.expiryDate).toLocaleDateString("vi-VN")}`
+                            : "—"}
                         </p>
                         <p className="text-[11px] font-bold text-red-400/80 uppercase">Vui lòng lấy trước thời gian này</p>
                       </div>
@@ -114,9 +147,16 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
               <div className="p-6 rounded-2xl bg-amber-50/50 border border-amber-100 flex gap-4 items-start">
                 <Info className="text-amber-500 shrink-0 mt-0.5" size={18} />
                 <p className="text-xs font-bold text-slate-600 leading-relaxed">
-                  <span className="text-amber-700 font-black uppercase tracking-wider">Lưu ý quan trọng:</span> {donation.fulfillmentMethod === "DELIVERY"
-                    ? "Đối tác sẽ sớm liên hệ với bạn để giao hàng. Hãy đảm bảo điện thoại của bạn luôn trong trạng thái có thể liên lạc được."
-                    : "Hãy xuất trình mã QR bên cạnh cho đối tác khi nhận hàng. Món ăn của bạn đang chờ được \"giải cứu\" đúng hẹn."}
+                  <span className="text-amber-700 font-black uppercase tracking-wider">Lưu ý quan trọng:</span>{" "}
+                  {d.fulfillmentMethod === "DELIVERY"
+                    ? status === "REQUESTED"
+                      ? "Cửa hàng sẽ duyệt đơn trước. Sau khi duyệt, đối tác có thể liên hệ giao hàng — giữ máy bận."
+                      : "Đối tác sẽ liên hệ để giao hàng. Hãy đảm bảo điện thoại có thể liên lạc."
+                    : status === "REQUESTED"
+                      ? "Đơn đang chờ cửa hàng duyệt. Sau khi được duyệt, hãy mang mã QR bên cạnh đến quầy; nhân viên chỉ quét hoàn tất khi đã duyệt."
+                      : status === "APPROVED"
+                        ? "Đơn đã được duyệt. Xuất trình mã QR cho nhân viên tại quầy để quét hoàn tất khi bạn nhận hàng."
+                        : "Đơn đã hoàn tất. Cảm ơn bạn đã giải cứu thực phẩm cùng chúng tôi."}
                 </p>
               </div>
             </div>
@@ -126,42 +166,88 @@ export default async function RescueSuccessPage({ params }: SuccessPageProps) {
               <div className="bg-white rounded-2xl border border-slate-100 p-10 space-y-10">
                 <div className="text-center space-y-1">
                   <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">
-                    {donation.fulfillmentMethod === "DELIVERY" ? "Thông tin vận chuyển" : "Mã nhận hàng của bạn"}
+                    {status === "COMPLETED"
+                      ? "Hoàn tất"
+                      : d.fulfillmentMethod === "DELIVERY"
+                        ? "Giao hàng & mã xác nhận"
+                        : "Mã nhận hàng của bạn"}
                   </h3>
                   <div className="w-12 h-1 bg-mint-primary mx-auto rounded-full mt-4" />
                 </div>
 
                 <div className="flex flex-col items-center gap-8">
-                  {donation.fulfillmentMethod === "DELIVERY" ? (
-                    <div className="space-y-8 text-center py-4">
-                      <div className="w-28 h-28 bg-slate-50 rounded-full flex items-center justify-center mx-auto border border-slate-100">
+                  {status === "COMPLETED" ? (
+                    <div className="space-y-6 py-6 text-center">
+                      <CheckCircle2
+                        className="mx-auto text-emerald-500"
+                        size={56}
+                        strokeWidth={2}
+                      />
+                      <div className="space-y-2">
+                        <h4 className="text-xl font-black italic tracking-tighter text-slate-900">
+                          Đơn đã hoàn tất
+                        </h4>
+                        <p className="mx-auto max-w-[260px] text-xs font-bold text-slate-400">
+                          Cảm ơn bạn đã đồng hành giải cứu thực phẩm.
+                        </p>
+                      </div>
+                    </div>
+                  ) : d.fulfillmentMethod === "DELIVERY" && status === "REQUESTED" ? (
+                    <div className="space-y-8 py-4 text-center">
+                      <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full border border-slate-100 bg-slate-50">
                         <Truck size={40} className="text-slate-200" />
                       </div>
                       <div className="space-y-3">
-                        <h4 className="text-xl font-black text-slate-900 italic tracking-tighter">Đang chờ xác nhận...</h4>
-                        <p className="text-xs font-bold text-slate-400 leading-relaxed max-w-[240px] mx-auto">Đối tác đang xử lý thông tin giao hàng và sẽ liên hệ với bạn trong giây lát.</p>
+                        <h4 className="text-xl font-black italic tracking-tighter text-slate-900">
+                          Chờ cửa hàng duyệt
+                        </h4>
+                        <p className="mx-auto max-w-[260px] text-xs font-bold leading-relaxed text-slate-400">
+                          Sau khi được duyệt, bạn sẽ thấy mã QR để đối tác quét khi giao hàng.
+                        </p>
                       </div>
                     </div>
                   ) : (
                     <>
-                      <QRCodeDisplay value={donation.qrCode || donation.id} />
+                      {isPickup && status === "REQUESTED" && (
+                        <div className="w-full rounded-xl border border-amber-100 bg-amber-50/90 p-4 text-center text-xs font-bold text-amber-950">
+                          Chờ shop duyệt. Mã bên dưới chỉ được quét hoàn tất sau khi cửa hàng đã duyệt đơn.
+                        </div>
+                      )}
+                      {isPickup && status === "APPROVED" && (
+                        <div className="w-full rounded-xl border border-sky-100 bg-sky-50/90 p-4 text-center text-xs font-bold text-sky-950">
+                          Đã duyệt — xuất trình mã này để nhân viên quét khi bạn nhận hàng.
+                        </div>
+                      )}
+                      {d.fulfillmentMethod === "DELIVERY" && status === "APPROVED" && (
+                        <div className="w-full rounded-xl border border-sky-100 bg-sky-50/90 p-4 text-center text-xs font-bold text-sky-950">
+                          Đã duyệt — giữ mã QR khi nhận hàng; shipper/shop sẽ quét để hoàn tất đơn.
+                        </div>
+                      )}
+                      <QRCodeDisplay value={d.qrCode || id} />
                       <div className="text-center">
-                        <p className="text-4xl font-black text-slate-900 tracking-[0.5em] tabular-nums italic">
-                          {donation.qrCode?.split('-').pop()?.toUpperCase() || id.slice(-6).toUpperCase()}
+                        <p className="text-4xl font-black tracking-[0.5em] tabular-nums italic text-slate-900">
+                          {d.qrCode?.split("-").pop()?.toUpperCase() ||
+                            id.slice(-6).toUpperCase()}
                         </p>
-                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] mt-4">Code định danh giải cứu</p>
+                        <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">
+                          Code định danh giải cứu
+                        </p>
                       </div>
                     </>
                   )}
                 </div>
 
                 <div className="space-y-4 pt-10 border-t border-slate-50">
-                  <button className="w-full h-14 bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-xl flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10">
+                  <button className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-slate-900 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-xl shadow-slate-900/10 transition-all hover:bg-slate-800">
                     <Phone size={14} />
-                    Liên hệ {donation.fulfillmentMethod === "DELIVERY" ? "Đối tác giao hàng" : "Người cho thực phẩm"}
+                    Liên hệ{" "}
+                    {d.fulfillmentMethod === "DELIVERY"
+                      ? "Đối tác giao hàng"
+                      : "Người cho thực phẩm"}
                   </button>
-                  <p className="text-[9px] text-center text-slate-300 font-bold uppercase tracking-[0.1em] select-none">
-                    ID Giao dịch: <span className="text-slate-200">{donation.id}</span>
+                  <p className="select-none text-center text-[9px] font-bold uppercase tracking-[0.1em] text-slate-300">
+                    ID Giao dịch:{" "}
+                    <span className="text-slate-200">{d.id}</span>
                   </p>
                 </div>
               </div>
