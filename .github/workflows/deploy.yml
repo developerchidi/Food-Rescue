@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "main", "master", "develop" ]
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
@@ -11,8 +15,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Kiểm tra secrets bắt buộc (Docker Hub + build)
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+        run: |
+          missing=""
+          [ -z "$DOCKERHUB_USERNAME" ] && missing="${missing} DOCKERHUB_USERNAME"
+          [ -z "$DOCKERHUB_TOKEN" ] && missing="${missing} DOCKERHUB_TOKEN"
+          [ -z "$DATABASE_URL" ] && missing="${missing} DATABASE_URL"
+          [ -z "$AUTH_SECRET" ] && missing="${missing} AUTH_SECRET"
+          if [ -n "$missing" ]; then
+            echo "::error::Thiếu GitHub Secrets:$missing. Vào Settings → Secrets and variables → Actions và thêm đủ (Docker Hub: Access Token, không dùng mật khẩu tài khoản nếu bật 2FA)."
+            exit 1
+          fi
+          echo "OK: đủ secrets tối thiểu cho login Docker và build."
+
       - name: Create Frontend .env for Docker build
         working-directory: Frontend
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
           echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
@@ -20,6 +44,12 @@ jobs:
           echo "AUTH_URL=http://157.20.82.3:21011" >> .env
           echo "AUTH_TRUST_HOST=true" >> .env
           echo "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}" >> .env
+          if [ -n "$NEXT_PUBLIC_API_URL" ]; then
+            echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -46,13 +76,18 @@ jobs:
             SMTP_USER=${{ secrets.SMTP_USER }}
             SMTP_PASS=${{ secrets.SMTP_PASS }}
             ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
-          # Cập nhật theo tài khoản của anh: devngchidi
-          tags: devngchidi/food-rescue:latest 
+          tags: devngchidi/food-rescue:latest
       
       - name: Triển khai lên DevOps Classroom
+        env:
+          DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
         run: |
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "::error::Thiếu secret DEPLOY_URL — thêm URL webhook DevOps Classroom vào repo Secrets."
+            exit 1
+          fi
           REPO="devngchidi/food-rescue"
-          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOY_URL }}?repo=$REPO&tag=latest")
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${DEPLOY_URL}?repo=$REPO&tag=latest")
           BODY=$(echo "$RESPONSE" | sed '$d')
           CODE=$(echo "$RESPONSE" | tail -n1)
           echo "Webhook HTTP: $CODE"
