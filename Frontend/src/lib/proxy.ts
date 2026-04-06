@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { BACKEND_API_BASE } from "@/lib/backend-url";
+import { getBackendApiBaseForServer } from "@/lib/backend-url";
 
 export class BackendApiError extends Error {
   status: number;
@@ -11,22 +11,35 @@ export class BackendApiError extends Error {
   }
 }
 
-export async function fetchFromBackend(endpoint: string, options: RequestInit = {}) {
+export type FetchFromBackendOptions = RequestInit & {
+  /** Trả về `null` thay vì ném lỗi khi backend 404 (trang chi tiết / notFound). */
+  allowNotFound?: boolean;
+};
+
+export async function fetchFromBackend(
+  endpoint: string,
+  options: FetchFromBackendOptions = {}
+) {
+  const { allowNotFound, ...fetchOptions } = options;
   const session = await auth();
   const token = (session as any)?.accessToken;
 
   const headers = {
     "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...options.headers,
+    ...fetchOptions.headers,
   };
 
-  const response = await fetch(`${BACKEND_API_BASE}${endpoint}`, {
-    ...options,
+  const base = getBackendApiBaseForServer();
+  const response = await fetch(`${base}${endpoint}`, {
+    ...fetchOptions,
     headers,
   });
 
   if (!response.ok) {
+    if (allowNotFound && response.status === 404) {
+      return null;
+    }
     let errorMessage = "API Client Error";
     try {
       const errBody = await response.json();

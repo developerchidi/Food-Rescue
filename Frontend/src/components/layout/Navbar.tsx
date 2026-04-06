@@ -64,6 +64,18 @@ export default function Navbar() {
                 >
                   Bài đăng
                 </Link>
+                <Link
+                  href="/merchant/orders"
+                  className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
+                >
+                  Đơn shop
+                </Link>
+                <Link
+                  href="/merchant/scan"
+                  className="text-[15px] font-medium hover:text-mint-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-primary"
+                >
+                  Quét QR
+                </Link>
               </>
             )}
             <Link

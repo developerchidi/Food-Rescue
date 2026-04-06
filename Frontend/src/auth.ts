@@ -17,11 +17,22 @@ export const authOptions: NextAuthOptions = {
         try {
           const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
             method: "POST",
-            body: JSON.stringify(credentials),
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
             headers: { "Content-Type": "application/json" },
           });
 
-          const data = await res.json();
+          const data = await res.json().catch(() => ({}));
+
+          if (process.env.NODE_ENV === "development" && !res.ok) {
+            console.error(
+              "[auth] Backend login failed:",
+              res.status,
+              data?.error ?? data
+            );
+          }
 
           if (res.ok && data.user && data.token) {
             return {
