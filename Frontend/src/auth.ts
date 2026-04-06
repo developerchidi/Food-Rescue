@@ -1,9 +1,9 @@
-import NextAuth, { getServerSession, type NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       name: "Credentials",
@@ -76,9 +76,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "development-secret",
   session: { strategy: "jwt" },
-};
-
-export async function auth() {
-  return getServerSession(authOptions);
-}
+});

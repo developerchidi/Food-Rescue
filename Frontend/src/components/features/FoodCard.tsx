@@ -100,7 +100,6 @@ export default function FoodCard({
           </div>
 
           <button
-            data-testid={`rescue-now-${id}`}
             onClick={() => router.push(`/rescue/confirm/${id}`)}
             disabled={quantity === 0}
             className={`w-full bg-mint-dark border-2 border-mint-dark/20 text-white font-bold rounded-bento-inner flex items-center justify-center gap-2 hover:bg-mint-dark/90 hover:shadow-lg hover:shadow-mint-dark/20 transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:grayscale ${compact ? 'h-9 text-xs' : 'h-11'}`}
